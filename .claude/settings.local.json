@@ -9,7 +9,9 @@
       "Bash(gh repo create:*)",
       "Bash(git remote set-url:*)",
       "Bash(git push:*)",
-      "WebFetch(domain:docs.google.com)"
+      "WebFetch(domain:docs.google.com)",
+      "Bash(npm init:*)",
+      "Bash(npm install:*)"
     ]
   }
 }

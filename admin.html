@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Faith & Fire</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #111; color: #eee; padding: 2rem; }
+  .login-box { max-width: 320px; margin: 4rem auto; }
+  .login-box h1 { font-size: 1.3rem; margin-bottom: 1rem; }
+  .login-box input { display: block; width: 100%; padding: 0.5rem; margin-bottom: 0.75rem; background: #222; border: 1px solid #444; color: #eee; border-radius: 4px; }
+  .login-box button { padding: 0.5rem 1.5rem; background: #c85028; border: none; color: #fff; border-radius: 4px; cursor: pointer; }
+  .login-box .error { color: #f66; font-size: 0.85rem; margin-bottom: 0.75rem; display: none; }
+  #admin-panel { display: none; }
+  h1 { font-size: 1.4rem; margin-bottom: 1rem; }
+  .stats { margin-bottom: 1.5rem; font-size: 0.9rem; color: #aaa; }
+  .stats span { color: #c85028; font-weight: bold; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+  th, td { padding: 0.5rem; text-align: left; border-bottom: 1px solid #333; }
+  th { background: #1a1a1a; color: #c85028; font-weight: 600; position: sticky; top: 0; }
+  tr:hover { background: #1a1a1a; }
+  .expand-btn { background: none; border: none; color: #c85028; cursor: pointer; font-size: 0.8rem; text-decoration: underline; }
+  .player-detail { background: #1a1a1a; padding: 0.75rem; margin: 0.25rem 0; border-left: 2px solid #c85028; font-size: 0.75rem; }
+  .player-detail strong { color: #c85028; }
+  .ref { font-family: monospace; color: #c85028; }
+  .time { color: #888; font-size: 0.75rem; }
+  #loading { color: #888; }
+  .search-box { margin-bottom: 1rem; }
+  .search-box input { padding: 0.5rem; background: #222; border: 1px solid #444; color: #eee; border-radius: 4px; width: 300px; }
+</style>
+</head>
+<body>
+
+<div class="login-box" id="login-box">
+  <h1>Admin Login</h1>
+  <input type="text" id="login-user" placeholder="Username">
+  <input type="password" id="login-pass" placeholder="Password">
+  <p class="error" id="login-error">Invalid credentials</p>
+  <button id="login-btn">Login</button>
+</div>
+
+<div id="admin-panel">
+  <h1>Registrations</h1>
+  <div class="stats" id="stats"></div>
+  <div class="search-box">
+    <input type="text" id="search" placeholder="Search by name, parish, team, email...">
+  </div>
+  <p id="loading">Loading...</p>
+  <table id="reg-table" style="display:none">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Parish</th>
+        <th>State</th>
+        <th>Team</th>
+        <th>Captain</th>
+        <th>Players</th>
+        <th>Payment Ref</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody id="reg-body"></tbody>
+  </table>
+</div>
+
+<script>
+  document.getElementById('login-btn').addEventListener('click', () => {
+    const user = document.getElementById('login-user').value.trim();
+    const pass = document.getElementById('login-pass').value.trim();
+    const err = document.getElementById('login-error');
+
+    if (user !== 'admin' || pass !== 'admin') {
+      err.textContent = 'Invalid credentials';
+      err.style.display = 'block';
+      return;
+    }
+
+    err.style.display = 'none';
+    document.getElementById('login-box').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+    loadData(user, pass);
+  });
+
+  document.querySelectorAll('#login-box input').forEach(el => {
+    el.addEventListener('keydown', (e) => { if (e.key === 'Enter') document.getElementById('login-btn').click(); });
+  });
+
+  let allRows = [];
+
+  async function loadData(user, pass) {
+    try {
+      const res = await fetch('/api/registrations', {
+        headers: { 'Authorization': 'Bearer ' + user + ':' + pass }
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || 'Request failed');
+      }
+      const data = await res.json();
+
+      document.getElementById('loading').style.display = 'none';
+      allRows = data || [];
+      document.getElementById('stats').innerHTML = 'Total registrations: <span>' + allRows.length + '</span> · Total players: <span>' + allRows.reduce((s, r) => s + (r.players ? r.players.length : 0), 0) + '</span>';
+      renderTable(allRows);
+    } catch (e) {
+      document.getElementById('loading').textContent = 'Error: ' + e.message;
+    }
+  }
+
+  function renderTable(rows) {
+    const table = document.getElementById('reg-table');
+    const body = document.getElementById('reg-body');
+    body.innerHTML = '';
+
+    if (rows.length === 0) {
+      body.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#888;padding:2rem">No registrations found</td></tr>';
+      table.style.display = 'table';
+      return;
+    }
+
+    rows.forEach((r, i) => {
+      const tr = document.createElement('tr');
+      const players = r.players || [];
+      const date = r.created_at ? new Date(r.created_at).toLocaleDateString('en-AU') : '—';
+
+      tr.innerHTML = `
+        <td>${i + 1}</td>
+        <td>${esc(r.first_name)} ${esc(r.last_name)}</td>
+        <td>${esc(r.email)}</td>
+        <td>${esc(r.parish)}</td>
+        <td>${esc(r.state || '—')}</td>
+        <td>${esc(r.team_name || '—')}</td>
+        <td>${esc(r.captain || '—')}</td>
+        <td><button class="expand-btn" data-idx="${i}">${players.length} players</button></td>
+        <td class="ref">${esc(r.payment_ref || '—')}</td>
+        <td class="time">${date}</td>
+      `;
+      body.appendChild(tr);
+
+      const detailTr = document.createElement('tr');
+      detailTr.id = 'detail-' + i;
+      detailTr.style.display = 'none';
+      const detailTd = document.createElement('td');
+      detailTd.colSpan = 10;
+      detailTd.innerHTML = players.map((p, j) =>
+        `<div class="player-detail"><strong>Player ${j + 1}:</strong> ${esc(p.first_name)} ${esc(p.last_name)} · Age ${p.age} · ${esc(p.phone)}<br>Emergency: ${esc(p.emergency_name)} (${esc(p.relation)}) — ${esc(p.emergency_phone)}</div>`
+      ).join('');
+      detailTr.appendChild(detailTd);
+      body.appendChild(detailTr);
+    });
+
+    table.style.display = 'table';
+  }
+
+  document.getElementById('reg-body').addEventListener('click', (e) => {
+    if (!e.target.classList.contains('expand-btn')) return;
+    const idx = e.target.dataset.idx;
+    const row = document.getElementById('detail-' + idx);
+    row.style.display = row.style.display === 'none' ? '' : 'none';
+  });
+
+  document.getElementById('search').addEventListener('input', (e) => {
+    const q = e.target.value.toLowerCase();
+    if (!q) return renderTable(allRows);
+    const filtered = allRows.filter(r =>
+      [r.first_name, r.last_name, r.email, r.parish, r.team_name, r.captain, r.state]
+        .filter(Boolean).join(' ').toLowerCase().includes(q)
+    );
+    renderTable(filtered);
+  });
+
+  function esc(s) {
+    if (!s) return '';
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+</script>
+</body>
+</html>

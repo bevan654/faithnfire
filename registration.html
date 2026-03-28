@@ -49,9 +49,25 @@
           <input class="form-input" type="email" id="reg-email" required>
         </div>
 
-        <div class="form-group">
-          <label class="form-label" for="reg-parish">Parish Name</label>
-          <input class="form-input" type="text" id="reg-parish" required>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="reg-parish">Parish Name</label>
+            <input class="form-input" type="text" id="reg-parish" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-state">State</label>
+            <select class="form-input" id="reg-state" required>
+              <option value="" disabled selected>Select state</option>
+              <option value="SA">SA</option>
+              <option value="VIC">VIC</option>
+              <option value="NSW">NSW</option>
+              <option value="QLD">QLD</option>
+              <option value="WA">WA</option>
+              <option value="TAS">TAS</option>
+              <option value="NT">NT</option>
+              <option value="ACT">ACT</option>
+            </select>
+          </div>
         </div>
 
         <div class="form-group">
@@ -134,7 +150,8 @@
       <div id="reg-success" style="display:none; text-align:center; padding:3rem 0;">
         <p class="section-heading">Registration Submitted</p>
         <p class="body-text">Thanks for registering your team. We'll be in touch soon.</p>
-        <a href="index.html" class="form-submit" style="display:inline-block;text-decoration:none;margin-top:1rem;">Back to Home</a>
+        <button class="form-submit" id="download-pdf" style="margin-top:1.5rem;">Download Registration PDF</button>
+        <a href="index.html" class="form-submit" style="display:inline-block;text-decoration:none;margin-top:1rem;background:transparent;border:1px solid var(--ember);color:var(--ember);">Back to Home</a>
       </div>
     </div>
 
@@ -148,7 +165,8 @@
   <script>
     // Build player slots
     const grid = document.getElementById('player-grid');
-    let playerCount = 6;
+
+    function slotCount() { return grid.querySelectorAll('.player-slot').length; }
 
     function createSlot(i, startOpen) {
       const num = String(i).padStart(2, '0');
@@ -191,23 +209,22 @@
     grid.after(addBtn);
 
     addBtn.addEventListener('click', () => {
-      playerCount++;
-      const slot = createSlot(playerCount, true);
+      const next = slotCount() + 1;
+      const slot = createSlot(next, true);
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
       removeBtn.className = 'player-remove';
       removeBtn.textContent = 'Remove Player';
       slot.querySelector('.player-fields').appendChild(removeBtn);
       grid.appendChild(slot);
-      if (playerCount >= 10) addBtn.style.display = 'none';
+      addBtn.style.display = slotCount() >= 10 ? 'none' : '';
     });
 
     grid.addEventListener('click', (e) => {
       if (!e.target.classList.contains('player-remove')) return;
       const slot = e.target.closest('.player-slot');
       slot.remove();
-      playerCount--;
-      addBtn.style.display = '';
+      addBtn.style.display = slotCount() >= 10 ? 'none' : '';
       // Renumber all slots
       grid.querySelectorAll('.player-slot').forEach((s, i) => {
         const num = String(i + 1).padStart(2, '0');
@@ -371,6 +388,7 @@
 
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
   <script>
     const sb = window.supabase.createClient(
       'https://tsxfidulfdmmkaavtgwr.supabase.co',
@@ -400,6 +418,7 @@
       const lastName = document.getElementById('reg-last').value.trim();
       const email = document.getElementById('reg-email').value.trim();
       const parish = document.getElementById('reg-parish').value.trim();
+      const state = document.getElementById('reg-state').value;
       const captain = document.getElementById('reg-captain').value;
 
       if (!firstName || !lastName) return showError('Please enter your first and last name.');
@@ -407,6 +426,8 @@
       if (!email) return showError('Please enter your email address.');
       if (!emailRegex.test(email)) return showError('Please enter a valid email address.');
       if (!parish) return showError('Please enter your parish name.');
+      if (!state) return showError('Please select your state.');
+      if (!document.getElementById('reg-team').value.trim()) return showError('Please enter your team name.');
 
       // Validate players
       const slots = document.querySelectorAll('.player-slot');
@@ -422,11 +443,9 @@
         const emergency = slot.querySelector('[data-player="emergency"]').value.trim();
         const relation = slot.querySelector('[data-player="relation"]').value.trim();
 
-        const hasAny = first || last || age || phone || emerName || emergency || relation;
         const hasAll = first && last && age && phone && emerName && emergency && relation;
 
-        if (hasAny && !hasAll) return showError('Player ' + slotNum + ': Please fill in all fields.');
-        if (!hasAny) continue;
+        if (!hasAll) return showError('Player ' + slotNum + ': Please fill in all fields.');
 
         if (!nameRegex.test(first) || !nameRegex.test(last)) return showError('Player ' + slotNum + ': Names must be at least 2 characters and contain only letters.');
 
@@ -444,14 +463,25 @@
       if (players.length < 6) return showError('You need at least 6 players to register.');
       if (!captain) return showError('Please select a team captain.');
 
+      const teamName = document.getElementById('reg-team').value.trim();
+      const refParts = ['FNF2026'];
+      const refParish = parish.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      const refTeam = teamName.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      if (refParish) refParts.push(refParish);
+      if (refTeam) refParts.push(refTeam);
+      refParts.push(Date.now().toString(36).toUpperCase().slice(-5));
+      const paymentRef = refParts.join('_');
+
       const { error } = await sb.from('registrations').insert({
         first_name: firstName,
         last_name: lastName,
         email,
         parish,
-        team_name: document.getElementById('reg-team').value.trim() || null,
+        state,
+        team_name: teamName,
         players,
         captain,
+        payment_ref: paymentRef,
         payment_acknowledged: document.getElementById('reg-payment').checked
       });
 
@@ -462,8 +492,122 @@
         return;
       }
 
+      // Store data for PDF
+      window._regData = { firstName, lastName, email, parish, state, teamName: teamName || '—', players, captain, paymentRef };
+
       document.getElementById('reg-form').style.display = 'none';
       document.getElementById('reg-success').style.display = 'block';
+    });
+
+    // PDF generation
+    document.getElementById('download-pdf').addEventListener('click', () => {
+      const d = window._regData;
+      if (!d) return;
+      if (!window.jspdf) { alert('PDF library failed to load. Please check your internet connection and try again.'); return; }
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const pw = doc.internal.pageSize.getWidth();
+      let y = 20;
+
+      function addLine(yy) { doc.setDrawColor(200, 80, 40); doc.setLineWidth(0.3); doc.line(14, yy, pw - 14, yy); }
+      function checkPage(needed) { if (y + needed > 275) { doc.addPage(); y = 20; } }
+
+      // Header
+      doc.setFontSize(22);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Faith & Fire Invitational', pw / 2, y, { align: 'center' });
+      y += 8;
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(120);
+      doc.text('Registration Confirmation  ·  26 September 2026', pw / 2, y, { align: 'center' });
+      doc.setTextColor(0);
+      y += 8;
+      addLine(y); y += 10;
+
+      // Contact details
+      doc.setFontSize(13);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Contact Details', 14, y); y += 8;
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      const info = [
+        ['Name', d.firstName + ' ' + d.lastName],
+        ['Email', d.email],
+        ['Parish', d.parish],
+        ['State', d.state],
+        ['Team Name', d.teamName],
+        ['Captain', d.captain]
+      ];
+      info.forEach(([label, val]) => {
+        doc.setFont('helvetica', 'bold');
+        doc.text(label + ':', 14, y);
+        doc.setFont('helvetica', 'normal');
+        doc.text(val, 55, y);
+        y += 6;
+      });
+      y += 4;
+      addLine(y); y += 10;
+
+      // Players
+      doc.setFontSize(13);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Players (' + d.players.length + ')', 14, y); y += 8;
+
+      d.players.forEach((p, i) => {
+        checkPage(36);
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(200, 80, 40);
+        doc.text('Player ' + (i + 1), 14, y);
+        doc.setTextColor(0);
+        y += 6;
+        doc.setFont('helvetica', 'normal');
+        doc.text('Name: ' + p.first_name + ' ' + p.last_name, 18, y); y += 5;
+        doc.text('Age: ' + p.age + '    Phone: ' + p.phone, 18, y); y += 5;
+        doc.text('Emergency: ' + p.emergency_name + ' (' + p.relation + ') — ' + p.emergency_phone, 18, y); y += 8;
+      });
+
+      y += 2;
+      addLine(y); y += 10;
+
+      // Payment
+      checkPage(40);
+      doc.setFontSize(13);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Payment Details', 14, y); y += 8;
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      const pay = [
+        ['Account Name', 'SMYM Adelaide South'],
+        ['BSB', '000-000'],
+        ['Account Number', '0000 0000'],
+        ['Amount', '$XX.00 per team']
+      ];
+      pay.forEach(([label, val]) => {
+        doc.setFont('helvetica', 'bold');
+        doc.text(label + ':', 14, y);
+        doc.setFont('helvetica', 'normal');
+        doc.text(val, 55, y);
+        y += 6;
+      });
+      y += 2;
+      doc.setFont('helvetica', 'bold');
+      doc.text('Reference:', 14, y);
+      doc.setTextColor(200, 80, 40);
+      doc.text(d.paymentRef, 55, y);
+      doc.setTextColor(0);
+      y += 10;
+      addLine(y); y += 10;
+
+      // Footer
+      checkPage(20);
+      doc.setFontSize(8);
+      doc.setTextColor(120);
+      doc.text('Generated on ' + new Date().toLocaleDateString('en-AU') + '  ·  Faith & Fire Invitational  ·  SMYM Adelaide South', pw / 2, y, { align: 'center' });
+
+      const fileName = 'FNF2026_' + d.parish.toUpperCase().replace(/[^A-Z0-9]/g, '') + '_Registration.pdf';
+      doc.save(fileName);
     });
   </script>
 </body>
