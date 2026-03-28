@@ -1,7 +1,6 @@
-import { createClient } from '@supabase/supabase-js';
+const { createClient } = require('@supabase/supabase-js');
 
-export default async function handler(req, res) {
-  // Simple auth check
+module.exports = async function handler(req, res) {
   const auth = req.headers.authorization;
   if (auth !== 'Bearer admin:admin') {
     return res.status(401).json({ error: 'Unauthorized' });
@@ -19,4 +18,4 @@ export default async function handler(req, res) {
   }
 
   return res.status(200).json(data);
-}
+};
