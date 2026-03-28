@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register — Faith & Fire Invitational</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="nav.css">
+</head>
+<body>
+  <div class="corner-mark tl"></div>
+  <div class="corner-mark tr"></div>
+  <div class="corner-mark bl"></div>
+  <div class="corner-mark br"></div>
+
+  <div class="page">
+    <nav class="site-nav">
+      <span class="hosted-by">SMYM Adelaide South</span>
+      <button class="nav-toggle">Menu</button>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="registration.html" class="active">Register</a></li>
+        <li><a href="faq.html">FAQ</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <span class="date-badge">26 · 09 · 2026</span>
+    </nav>
+
+    <div class="page-content">
+      <h1 class="page-title">Register</h1>
+      <p class="page-subtitle">Team Registration</p>
+      <div class="page-divider"></div>
+
+      <form id="reg-form" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="reg-first">First Name</label>
+            <input class="form-input" type="text" id="reg-first" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-last">Last Name</label>
+            <input class="form-input" type="text" id="reg-last" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-email">Contact Email</label>
+          <input class="form-input" type="email" id="reg-email" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-parish">Parish Name</label>
+          <input class="form-input" type="text" id="reg-parish" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-team">Team Name</label>
+          <input class="form-input" type="text" id="reg-team">
+        </div>
+
+        <div class="page-divider" style="margin:2.5rem 0"></div>
+        <p class="label-text" style="margin-bottom:1.5rem">Players — minimum 6, maximum 10</p>
+
+        <div class="player-grid" id="player-grid"></div>
+
+        <div class="page-divider" style="margin:2.5rem 0"></div>
+
+        <div class="captain-select">
+          <div class="captain-icon">C</div>
+          <div class="form-group" style="flex:1;margin-bottom:0">
+            <label class="form-label" for="reg-captain">Team Captain</label>
+            <select class="form-input" id="reg-captain" required>
+              <option value="" disabled selected>Select a player</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="page-divider" style="margin:2.5rem 0"></div>
+
+        <div class="payment-section">
+          <p class="section-heading" style="margin-bottom:0.5rem">Payment</p>
+          <p class="body-text" style="margin-bottom:1.5rem">Transfer the registration fee to the account below. Use the <strong class="highlight-pulse">provided reference</strong> so we can match your transfer.</p>
+
+          <div class="payment-details">
+            <div class="payment-row">
+              <span class="label-text">Account Name</span>
+              <span class="payment-value">SMYM Adelaide South</span>
+            </div>
+            <div class="payment-row">
+              <span class="label-text">BSB</span>
+              <span class="payment-value">000-000</span>
+            </div>
+            <div class="payment-row">
+              <span class="label-text">Account Number</span>
+              <span class="payment-value">0000 0000</span>
+            </div>
+            <div class="payment-row">
+              <span class="label-text">Amount</span>
+              <span class="payment-value">$XX.00 per team</span>
+            </div>
+            <div class="payment-ref-box">
+              <span class="label-text">Reference</span>
+              <span class="payment-ref-value" id="payment-ref">FNF2026_...</span>
+            </div>
+          </div>
+
+          <details class="terms-typewriter" style="margin-top:1.5rem" id="terms-details">
+            <summary class="terms-toggle">Terms & Conditions</summary>
+            <div class="terms-inner">
+              <div class="terms-content">
+                <ol id="terms-list"></ol>
+              </div>
+              <div id="terms-cursor" class="terms-cursor">_</div>
+            </div>
+          </details>
+
+          <div class="terms-agree-box" id="terms-agree" style="display:none">
+            <label class="checkbox-option" style="align-items:flex-start">
+              <input type="checkbox" id="reg-payment" required style="margin-top:0.15rem">
+              <div>
+                <span class="body-text" style="margin-bottom:0.3rem;font-size:0.9rem;color:var(--white);display:block">I agree to the Terms & Conditions</span>
+                <span class="label-text" style="font-size:0.55rem;line-height:1.6;color:var(--grey)">I confirm that I have read and understood the above terms, and that payment will be transferred within 7 days of registration.</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div id="reg-error" class="form-error" style="display:none"></div>
+
+        <button class="form-submit" type="submit" id="reg-submit" disabled style="margin-top:2.5rem">Submit Registration</button>
+      </form>
+
+      <div id="reg-success" style="display:none; text-align:center; padding:3rem 0;">
+        <p class="section-heading">Registration Submitted</p>
+        <p class="body-text">Thanks for registering your team. We'll be in touch soon.</p>
+        <a href="index.html" class="form-submit" style="display:inline-block;text-decoration:none;margin-top:1rem;">Back to Home</a>
+      </div>
+    </div>
+
+    <footer class="bottom-bar">
+      <span>Sport · Fellowship · Faith</span>
+      <span>Enquiries — <a href="mailto:contact@faithandfire.com">contact@faithandfire.com</a></span>
+    </footer>
+  </div>
+
+  <script src="shared.js"></script>
+  <script>
+    // Build player slots
+    const grid = document.getElementById('player-grid');
+    let playerCount = 6;
+
+    function createSlot(i, startOpen) {
+      const num = String(i).padStart(2, '0');
+      const details = document.createElement('details');
+      details.className = 'player-slot';
+      if (startOpen) details.open = true;
+      details.innerHTML = `
+        <summary class="player-header">
+          <span class="player-number">${num}</span>
+          <span class="player-title">Player ${i}</span>
+          <span class="player-summary"></span>
+          <span class="player-status label-text" style="color:var(--ember);margin-left:auto">Required</span>
+        </summary>
+        <div class="player-fields">
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">First Name</label><input class="form-input" type="text" data-player="first"></div>
+            <div class="form-group"><label class="form-label">Last Name</label><input class="form-input" type="text" data-player="last"></div>
+          </div>
+          <div class="form-group"><label class="form-label">Age</label><input class="form-input" type="number" data-player="age" min="1" max="99"></div>
+          <div class="form-group"><label class="form-label">Phone Number</label><input class="form-input" type="tel" data-player="phone"></div>
+          <div class="form-group"><label class="form-label">Emergency Contact Name</label><input class="form-input" type="text" data-player="emer_name"></div>
+          <div class="form-group"><label class="form-label">Emergency Contact Phone</label><input class="form-input" type="tel" data-player="emergency"></div>
+          <div class="form-group"><label class="form-label">Relation to Player</label><input class="form-input" type="text" data-player="relation" placeholder="e.g. Parent, Sibling, Friend"></div>
+          <button type="button" class="player-done">Done</button>
+        </div>
+      `;
+      return details;
+    }
+
+    // Start with 6 required slots
+    for (let i = 1; i <= 6; i++) {
+      grid.appendChild(createSlot(i, i === 1));
+    }
+
+    // Add player button
+    const addBtn = document.createElement('button');
+    addBtn.type = 'button';
+    addBtn.className = 'player-add';
+    addBtn.textContent = '+ Add Player';
+    grid.after(addBtn);
+
+    addBtn.addEventListener('click', () => {
+      playerCount++;
+      const slot = createSlot(playerCount, true);
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'player-remove';
+      removeBtn.textContent = 'Remove Player';
+      slot.querySelector('.player-fields').appendChild(removeBtn);
+      grid.appendChild(slot);
+      if (playerCount >= 10) addBtn.style.display = 'none';
+    });
+
+    grid.addEventListener('click', (e) => {
+      if (!e.target.classList.contains('player-remove')) return;
+      const slot = e.target.closest('.player-slot');
+      slot.remove();
+      playerCount--;
+      addBtn.style.display = '';
+      // Renumber all slots
+      grid.querySelectorAll('.player-slot').forEach((s, i) => {
+        const num = String(i + 1).padStart(2, '0');
+        s.querySelector('.player-number').textContent = num;
+        const first = s.querySelector('[data-player="first"]').value.trim();
+        const last = s.querySelector('[data-player="last"]').value.trim();
+        if (!first && !last) s.querySelector('.player-title').textContent = 'Player ' + (i + 1);
+      });
+      updateCaptainDropdown();
+    });
+
+    // Update captain dropdown options
+    const captainSelect = document.getElementById('reg-captain');
+    function updateCaptainDropdown() {
+      const current = captainSelect.value;
+      const slots = grid.querySelectorAll('.player-slot');
+      captainSelect.innerHTML = '<option value="" disabled>Select a player</option>';
+      slots.forEach((s, i) => {
+        const first = s.querySelector('[data-player="first"]').value.trim();
+        const last = s.querySelector('[data-player="last"]').value.trim();
+        if (first || last) {
+          const name = [first, last].filter(Boolean).join(' ');
+          const opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = name;
+          if (name === current) opt.selected = true;
+          captainSelect.appendChild(opt);
+        }
+      });
+      if (!captainSelect.value && current) captainSelect.value = '';
+    }
+
+    // Live update summary as they type
+    grid.addEventListener('input', (e) => {
+      if (!e.target.dataset.player) return;
+      const slot = e.target.closest('.player-slot');
+      const title = slot.querySelector('.player-title');
+      const summary = slot.querySelector('.player-summary');
+      const status = slot.querySelector('.player-status');
+      const num = slot.querySelector('.player-number').textContent;
+      const first = slot.querySelector('[data-player="first"]').value.trim();
+      const last = slot.querySelector('[data-player="last"]').value.trim();
+      const age = slot.querySelector('[data-player="age"]').value.trim();
+      const phone = slot.querySelector('[data-player="phone"]').value.trim();
+      const emerName = slot.querySelector('[data-player="emer_name"]').value.trim();
+      const emergency = slot.querySelector('[data-player="emergency"]').value.trim();
+      const relation = slot.querySelector('[data-player="relation"]').value.trim();
+      const fullName = [first, last].filter(Boolean).join(' ');
+      title.textContent = fullName || 'Player ' + parseInt(num);
+      const parts = [];
+      if (age) parts.push('Age ' + age);
+      if (phone) parts.push(phone);
+      summary.textContent = parts.join('  ·  ');
+      if (first && last && age && phone && emerName && emergency && relation) {
+        status.textContent = '';
+      } else {
+        const idx = parseInt(num);
+        status.textContent = idx <= 6 ? 'Required' : 'Optional';
+        status.style.color = idx <= 6 ? 'var(--ember)' : 'var(--grey)';
+      }
+      updateCaptainDropdown();
+    });
+
+    // Done button & edit logic
+    grid.addEventListener('click', (e) => {
+      if (!e.target.classList.contains('player-done')) return;
+      const slot = e.target.closest('.player-slot');
+      const first = slot.querySelector('[data-player="first"]').value.trim();
+      const last = slot.querySelector('[data-player="last"]').value.trim();
+      const age = slot.querySelector('[data-player="age"]').value.trim();
+      const phone = slot.querySelector('[data-player="phone"]').value.trim();
+      const emerName = slot.querySelector('[data-player="emer_name"]').value.trim();
+      const emergency = slot.querySelector('[data-player="emergency"]').value.trim();
+      const relation = slot.querySelector('[data-player="relation"]').value.trim();
+      const title = slot.querySelector('.player-title');
+      const summary = slot.querySelector('.player-summary');
+      const status = slot.querySelector('.player-status');
+
+      if (first && last && age && phone && emerName && emergency && relation) {
+        title.textContent = first + ' ' + last;
+        summary.textContent = 'Age ' + age + '  ·  ' + phone;
+        status.textContent = '';
+        slot.classList.add('player-filled');
+        slot.open = false;
+      }
+    });
+
+
+    // Terms typewriter
+    const terms = [
+      'Payment must be received within 7 days of registration. Teams that have not paid within this period will have their registration cancelled.',
+      'The organisers are not responsible for incorrect transfers. Please ensure the BSB, account number, and reference are entered correctly.',
+      'Payments made with an incorrect or missing reference may not be identified and could result in your registration being unconfirmed.',
+      'Registration fees are non-refundable unless the event is cancelled by the organisers.',
+      'By registering, you confirm that all player information provided is accurate and that all participants consent to taking part in the tournament.'
+    ];
+    const termsList = document.getElementById('terms-list');
+    const termsCursor = document.getElementById('terms-cursor');
+    const termsAgree = document.getElementById('terms-agree');
+    let termsStarted = false;
+
+    function typeTerms() {
+      if (termsStarted) return;
+      termsStarted = true;
+      let termIdx = 0;
+      let charIdx = 0;
+      let currentLi = null;
+
+      function typeNext() {
+        if (termIdx >= terms.length) {
+          termsCursor.style.display = 'none';
+          termsAgree.style.display = 'block';
+          return;
+        }
+        if (charIdx === 0) {
+          currentLi = document.createElement('li');
+          currentLi.textContent = '';
+          termsList.appendChild(currentLi);
+        }
+        currentLi.textContent = terms[termIdx].slice(0, charIdx + 1);
+        charIdx++;
+        if (charIdx > terms[termIdx].length) {
+          termIdx++;
+          charIdx = 0;
+          setTimeout(typeNext, 300);
+        } else {
+          setTimeout(typeNext, 15);
+        }
+      }
+      typeNext();
+    }
+
+    // Start typewriter when expanded
+    document.getElementById('terms-details').addEventListener('toggle', function() {
+      if (this.open) typeTerms();
+    });
+
+    // Auto-generate payment reference
+    const parishInput = document.getElementById('reg-parish');
+    const teamInput = document.getElementById('reg-team');
+    const refEl = document.getElementById('payment-ref');
+    const ts = Date.now().toString(36).toUpperCase().slice(-5);
+    function updateRef() {
+      const parish = parishInput.value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+      const team = teamInput.value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+      const parts = ['FNF2026'];
+      if (parish) parts.push(parish);
+      if (team) parts.push(team);
+      parts.push(ts);
+      refEl.textContent = parts.join('_');
+    }
+    parishInput.addEventListener('input', updateRef);
+    teamInput.addEventListener('input', updateRef);
+
+    // Toggle submit button based on payment checkbox
+    const paymentBox = document.getElementById('reg-payment');
+    const submitBtn = document.getElementById('reg-submit');
+    paymentBox.addEventListener('change', () => {
+      submitBtn.disabled = !paymentBox.checked;
+    });
+
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script>
+    const sb = window.supabase.createClient(
+      'https://tsxfidulfdmmkaavtgwr.supabase.co',
+      'sb_publishable_i2ffIbcqV5jv8uEd6sdFHw_kNcB2Ege'
+    );
+
+    // Validation helpers
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^[\d\s\-+()]{8,15}$/;
+    const nameRegex = /^[a-zA-Z\s\-']{2,}$/;
+
+    function showError(msg) {
+      const errorEl = document.getElementById('reg-error');
+      errorEl.textContent = msg;
+      errorEl.style.display = 'block';
+      errorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    // Form submission
+    document.getElementById('reg-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errorEl = document.getElementById('reg-error');
+      errorEl.style.display = 'none';
+
+      // Validate contact info
+      const firstName = document.getElementById('reg-first').value.trim();
+      const lastName = document.getElementById('reg-last').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const parish = document.getElementById('reg-parish').value.trim();
+      const captain = document.getElementById('reg-captain').value;
+
+      if (!firstName || !lastName) return showError('Please enter your first and last name.');
+      if (!nameRegex.test(firstName) || !nameRegex.test(lastName)) return showError('Names must be at least 2 characters and contain only letters.');
+      if (!email) return showError('Please enter your email address.');
+      if (!emailRegex.test(email)) return showError('Please enter a valid email address.');
+      if (!parish) return showError('Please enter your parish name.');
+
+      // Validate players
+      const slots = document.querySelectorAll('.player-slot');
+      const players = [];
+      let slotNum = 0;
+      for (const slot of slots) {
+        slotNum++;
+        const first = slot.querySelector('[data-player="first"]').value.trim();
+        const last = slot.querySelector('[data-player="last"]').value.trim();
+        const age = slot.querySelector('[data-player="age"]').value.trim();
+        const phone = slot.querySelector('[data-player="phone"]').value.trim();
+        const emerName = slot.querySelector('[data-player="emer_name"]').value.trim();
+        const emergency = slot.querySelector('[data-player="emergency"]').value.trim();
+        const relation = slot.querySelector('[data-player="relation"]').value.trim();
+
+        const hasAny = first || last || age || phone || emerName || emergency || relation;
+        const hasAll = first && last && age && phone && emerName && emergency && relation;
+
+        if (hasAny && !hasAll) return showError('Player ' + slotNum + ': Please fill in all fields.');
+        if (!hasAny) continue;
+
+        if (!nameRegex.test(first) || !nameRegex.test(last)) return showError('Player ' + slotNum + ': Names must be at least 2 characters and contain only letters.');
+
+        const ageNum = parseInt(age);
+        if (isNaN(ageNum) || ageNum < 5 || ageNum > 99) return showError('Player ' + slotNum + ': Age must be between 5 and 99.');
+
+        if (!phoneRegex.test(phone)) return showError('Player ' + slotNum + ': Please enter a valid phone number.');
+        if (!nameRegex.test(emerName)) return showError('Player ' + slotNum + ': Emergency contact name must be at least 2 characters.');
+        if (!phoneRegex.test(emergency)) return showError('Player ' + slotNum + ': Please enter a valid emergency phone number.');
+        if (relation.length < 2) return showError('Player ' + slotNum + ': Please enter the relation to the player.');
+
+        players.push({ first_name: first, last_name: last, age: ageNum, phone, emergency_name: emerName, emergency_phone: emergency, relation });
+      }
+
+      if (players.length < 6) return showError('You need at least 6 players to register.');
+      if (!captain) return showError('Please select a team captain.');
+
+      const { error } = await sb.from('registrations').insert({
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        parish,
+        team_name: document.getElementById('reg-team').value.trim() || null,
+        players,
+        captain,
+        payment_acknowledged: document.getElementById('reg-payment').checked
+      });
+
+      if (error) {
+        errorEl.textContent = 'Something went wrong. Please try again.';
+        errorEl.style.display = 'block';
+        console.error(error);
+        return;
+      }
+
+      document.getElementById('reg-form').style.display = 'none';
+      document.getElementById('reg-success').style.display = 'block';
+    });
+  </script>
+</body>
+</html>
