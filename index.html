@@ -275,6 +275,46 @@
     .volleyball-lines { width: 200px; height: 200px; }
   }
 
+  .register-btn {
+    display: inline-block;
+    margin-top: 2.5rem;
+    padding: 0.85rem 3rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--white);
+    background: transparent;
+    border: 1px solid var(--ember);
+    position: relative;
+    overflow: hidden;
+    transition: color 0.4s, border-color 0.4s, transform 0.2s, box-shadow 0.4s;
+    opacity: 0;
+    z-index: 1;
+  }
+  .register-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--ember);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: -1;
+  }
+  .register-btn:hover {
+    color: var(--black);
+    border-color: var(--flame-orange);
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(255,106,0,0.25);
+  }
+  .register-btn:hover::before {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
   /* Small flame icon */
   .flame {
     display: inline-block;
@@ -367,6 +407,8 @@
           <span>Reynella East College</span>
           <span>Adelaide, SA</span>
         </div>
+
+        <a href="registration.html" class="register-btn">Register Now</a>
       </div>
     </main>
 
@@ -561,6 +603,9 @@
     tl.to(".details", {
       opacity: 1, duration: 1, ease: "power2.out"
     }, 5.0);
+    tl.to(".register-btn", {
+      opacity: 1, duration: 1, ease: "power2.out"
+    }, 5.2);
 
     // -- Nav & bottom bar --
     tl.to(".site-nav", {
