@@ -7,6 +7,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="nav.css">
+<style>
+  .loading-spinner {
+    width: 40px; height: 40px; margin: 0 auto;
+    border: 3px solid rgba(255,255,255,0.1);
+    border-top-color: var(--ember);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
 </head>
 <body>
   <div class="corner-mark tl"></div>
@@ -21,6 +31,7 @@
       <ul class="nav-links">
         <li><a href="index.html">Home</a></li>
         <li><a href="registration.html" class="active">Register</a></li>
+        <li><a href="rules.html">Rules</a></li>
         <li><a href="faq.html">FAQ</a></li>
         <li><a href="contact.html">Contact</a></li>
       </ul>
@@ -96,56 +107,19 @@
 
         <div class="payment-section">
           <p class="section-heading" style="margin-bottom:0.5rem">Payment</p>
-          <p class="body-text" style="margin-bottom:1.5rem">Transfer the registration fee to the account below. Use the <strong class="highlight-pulse">provided reference</strong> so we can match your transfer.</p>
-
-          <div class="payment-details">
-            <div class="payment-row">
-              <span class="label-text">Account Name</span>
-              <span class="payment-value">SMYM Adelaide South</span>
-            </div>
-            <div class="payment-row">
-              <span class="label-text">BSB</span>
-              <span class="payment-value">000-000</span>
-            </div>
-            <div class="payment-row">
-              <span class="label-text">Account Number</span>
-              <span class="payment-value">0000 0000</span>
-            </div>
-            <div class="payment-row">
-              <span class="label-text">Amount</span>
-              <span class="payment-value">$XX.00 per team</span>
-            </div>
-            <div class="payment-ref-box">
-              <span class="label-text">Reference</span>
-              <span class="payment-ref-value" id="payment-ref">FNF2026_...</span>
-            </div>
-          </div>
-
-          <details class="terms-typewriter" style="margin-top:1.5rem" id="terms-details">
-            <summary class="terms-toggle">Terms & Conditions</summary>
-            <div class="terms-inner">
-              <div class="terms-content">
-                <ol id="terms-list"></ol>
-              </div>
-              <div id="terms-cursor" class="terms-cursor">_</div>
-            </div>
-          </details>
-
-          <div class="terms-agree-box" id="terms-agree" style="display:none">
-            <label class="checkbox-option" style="align-items:flex-start">
-              <input type="checkbox" id="reg-payment" required style="margin-top:0.15rem">
-              <div>
-                <span class="body-text" style="margin-bottom:0.3rem;font-size:0.9rem;color:var(--white);display:block">I agree to the Terms & Conditions</span>
-                <span class="label-text" style="font-size:0.55rem;line-height:1.6;color:var(--grey)">I confirm that I have read and understood the above terms, and that payment will be transferred within 7 days of registration.</span>
-              </div>
-            </label>
-          </div>
+          <p class="body-text" style="margin-bottom:0" id="payment-msg">Select your state above to see the registration fee.</p>
         </div>
 
         <div id="reg-error" class="form-error" style="display:none"></div>
 
-        <button class="form-submit" type="submit" id="reg-submit" disabled style="margin-top:2.5rem">Submit Registration</button>
+        <button class="form-submit" type="submit" id="reg-submit" style="margin-top:2.5rem">Submit Registration</button>
       </form>
+
+      <div id="reg-loading" style="display:none; text-align:center; padding:5rem 0;">
+        <div class="loading-spinner"></div>
+        <p class="section-heading" style="margin-top:1.5rem">Submitting Registration</p>
+        <p class="body-text">Please wait while we process your registration...</p>
+      </div>
 
       <div id="reg-success" style="display:none; text-align:center; padding:3rem 0;">
         <p class="section-heading">Registration Submitted</p>
@@ -157,12 +131,20 @@
 
     <footer class="bottom-bar">
       <span>Sport · Fellowship · Faith</span>
-      <span>Enquiries — <a href="mailto:contact@faithandfire.com">contact@faithandfire.com</a></span>
+      <span>Enquiries — <a href="mailto:smym.adelaidesouth@gmail.com">smym.adelaidesouth@gmail.com</a></span>
     </footer>
   </div>
 
   <script src="shared.js"></script>
   <script>
+    // Update payment message based on state
+    const stateSelect = document.getElementById('reg-state');
+    const paymentMsg = document.getElementById('payment-msg');
+    stateSelect.addEventListener('change', () => {
+      const amt = stateSelect.value === 'SA' ? '$225' : '$175';
+      paymentMsg.innerHTML = 'Your registration fee is <strong>' + amt + ' per team</strong>. Once your registration is submitted, we will reach out to you with payment details via email.';
+    });
+
     // Build player slots
     const grid = document.getElementById('player-grid');
 
@@ -313,78 +295,6 @@
     });
 
 
-    // Terms typewriter
-    const terms = [
-      'Payment must be received within 7 days of registration. Teams that have not paid within this period will have their registration cancelled.',
-      'The organisers are not responsible for incorrect transfers. Please ensure the BSB, account number, and reference are entered correctly.',
-      'Payments made with an incorrect or missing reference may not be identified and could result in your registration being unconfirmed.',
-      'Registration fees are non-refundable unless the event is cancelled by the organisers.',
-      'By registering, you confirm that all player information provided is accurate and that all participants consent to taking part in the tournament.'
-    ];
-    const termsList = document.getElementById('terms-list');
-    const termsCursor = document.getElementById('terms-cursor');
-    const termsAgree = document.getElementById('terms-agree');
-    let termsStarted = false;
-
-    function typeTerms() {
-      if (termsStarted) return;
-      termsStarted = true;
-      let termIdx = 0;
-      let charIdx = 0;
-      let currentLi = null;
-
-      function typeNext() {
-        if (termIdx >= terms.length) {
-          termsCursor.style.display = 'none';
-          termsAgree.style.display = 'block';
-          return;
-        }
-        if (charIdx === 0) {
-          currentLi = document.createElement('li');
-          currentLi.textContent = '';
-          termsList.appendChild(currentLi);
-        }
-        currentLi.textContent = terms[termIdx].slice(0, charIdx + 1);
-        charIdx++;
-        if (charIdx > terms[termIdx].length) {
-          termIdx++;
-          charIdx = 0;
-          setTimeout(typeNext, 300);
-        } else {
-          setTimeout(typeNext, 15);
-        }
-      }
-      typeNext();
-    }
-
-    // Start typewriter when expanded
-    document.getElementById('terms-details').addEventListener('toggle', function() {
-      if (this.open) typeTerms();
-    });
-
-    // Auto-generate payment reference
-    const parishInput = document.getElementById('reg-parish');
-    const teamInput = document.getElementById('reg-team');
-    const refEl = document.getElementById('payment-ref');
-    const ts = Date.now().toString(36).toUpperCase().slice(-5);
-    function updateRef() {
-      const parish = parishInput.value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
-      const team = teamInput.value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
-      const parts = ['FNF2026'];
-      if (parish) parts.push(parish);
-      if (team) parts.push(team);
-      parts.push(ts);
-      refEl.textContent = parts.join('_');
-    }
-    parishInput.addEventListener('input', updateRef);
-    teamInput.addEventListener('input', updateRef);
-
-    // Toggle submit button based on payment checkbox
-    const paymentBox = document.getElementById('reg-payment');
-    const submitBtn = document.getElementById('reg-submit');
-    paymentBox.addEventListener('change', () => {
-      submitBtn.disabled = !paymentBox.checked;
-    });
 
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -472,6 +382,10 @@
       refParts.push(Date.now().toString(36).toUpperCase().slice(-5));
       const paymentRef = refParts.join('_');
 
+      // Show loading
+      document.getElementById('reg-form').style.display = 'none';
+      document.getElementById('reg-loading').style.display = 'block';
+
       const { error } = await sb.from('registrations').insert({
         first_name: firstName,
         last_name: lastName,
@@ -481,11 +395,13 @@
         team_name: teamName,
         players,
         captain,
-        payment_ref: paymentRef,
-        payment_acknowledged: document.getElementById('reg-payment').checked
+        payment_ref: paymentRef
       });
 
+      document.getElementById('reg-loading').style.display = 'none';
+
       if (error) {
+        document.getElementById('reg-form').style.display = '';
         errorEl.textContent = 'Something went wrong. Please try again.';
         errorEl.style.display = 'block';
         console.error(error);
@@ -495,7 +411,6 @@
       // Store data for PDF
       window._regData = { firstName, lastName, email, parish, state, teamName: teamName || '—', players, captain, paymentRef };
 
-      document.getElementById('reg-form').style.display = 'none';
       document.getElementById('reg-success').style.display = 'block';
     });
 
@@ -572,32 +487,15 @@
       addLine(y); y += 10;
 
       // Payment
-      checkPage(40);
+      checkPage(20);
       doc.setFontSize(13);
       doc.setFont('helvetica', 'bold');
-      doc.text('Payment Details', 14, y); y += 8;
+      doc.text('Payment', 14, y); y += 8;
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
-      const pay = [
-        ['Account Name', 'SMYM Adelaide South'],
-        ['BSB', '000-000'],
-        ['Account Number', '0000 0000'],
-        ['Amount', '$XX.00 per team']
-      ];
-      pay.forEach(([label, val]) => {
-        doc.setFont('helvetica', 'bold');
-        doc.text(label + ':', 14, y);
-        doc.setFont('helvetica', 'normal');
-        doc.text(val, 55, y);
-        y += 6;
-      });
-      y += 2;
-      doc.setFont('helvetica', 'bold');
-      doc.text('Reference:', 14, y);
-      doc.setTextColor(200, 80, 40);
-      doc.text(d.paymentRef, 55, y);
-      doc.setTextColor(0);
-      y += 10;
+      const amt = d.state === 'SA' ? '$225.00' : '$175.00';
+      doc.text('Registration Fee: ' + amt + ' per team', 14, y); y += 6;
+      doc.text('Payment details will be sent to you via email.', 14, y); y += 10;
       addLine(y); y += 10;
 
       // Footer

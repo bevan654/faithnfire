@@ -160,6 +160,30 @@ body::before {
 .content-card::before { top: -4px; left: -4px; }
 .content-card::after { bottom: -4px; right: -4px; }
 
+.rule-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 1rem;
+}
+.rule-list li {
+  padding: 0.6rem 0;
+  padding-left: 1.2rem;
+  border-bottom: 1px solid rgba(245,245,240,0.05);
+  position: relative;
+}
+.rule-list li:last-child { border-bottom: none; }
+.rule-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  background: var(--ember);
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+
 /* === Form Row === */
 .form-row {
   display: flex;
