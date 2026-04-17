@@ -11,7 +11,8 @@
       "Bash(git push:*)",
       "WebFetch(domain:docs.google.com)",
       "Bash(npm init:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(curl:*)"
     ]
   }
 }

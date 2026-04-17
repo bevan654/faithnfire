@@ -16,11 +16,13 @@ module.exports = async function handler(req, res) {
     process.env.SUPABASE_SERVICE_ROLE_KEY
   );
 
-  const { data, error } = await sb.from('registrations').select('*').order('created_at', { ascending: false });
+  const { data, error } = await sb
+    .from('audit_log')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(100);
 
-  if (error) {
-    return res.status(500).json({ error: error.message });
-  }
+  if (error) return res.status(500).json({ error: error.message });
 
   return res.status(200).json(data);
 };

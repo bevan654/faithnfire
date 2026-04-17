@@ -16,6 +16,49 @@
     animation: spin 0.8s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
+
+  .slots-popup-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,0.75); backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+  }
+  .slots-popup-overlay.active { opacity: 1; pointer-events: auto; }
+  .slots-popup {
+    background: #111; border: 1px solid rgba(245,245,240,0.1);
+    border-radius: 12px; max-width: 420px; width: 90%; padding: 2.5rem 2rem 2rem;
+    text-align: center; position: relative;
+    box-shadow: 0 24px 48px rgba(0,0,0,0.5);
+  }
+  .slots-popup-icon {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: rgba(207,79,40,0.12); margin: 0 auto 1.2rem;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.6rem;
+  }
+  .slots-popup h3 {
+    font-family: 'Inter', sans-serif; font-weight: 800;
+    font-size: 1.15rem; color: var(--white); margin: 0 0 0.6rem;
+  }
+  .slots-popup p {
+    font-family: 'Cormorant Garamond', serif; font-size: 1.05rem;
+    color: var(--grey); line-height: 1.6; margin: 0 0 1.5rem;
+  }
+  .slots-popup-btn {
+    font-family: 'Inter', sans-serif; font-weight: 700;
+    font-size: 0.8rem; letter-spacing: 0.04em;
+    padding: 0.7rem 2rem; border: none; border-radius: 6px;
+    cursor: pointer; transition: background 0.2s;
+    background: var(--ember); color: var(--white);
+  }
+  .slots-popup-btn:hover { background: var(--flame-orange); }
+  .slots-popup-close {
+    position: absolute; top: 0.75rem; right: 0.75rem;
+    background: none; border: none; color: var(--grey);
+    font-size: 1.3rem; cursor: pointer; line-height: 1;
+    padding: 0.25rem;
+  }
+  .slots-popup-close:hover { color: var(--white); }
 </style>
 </head>
 <body>
@@ -29,11 +72,11 @@
       <span class="hosted-by">SMYM Adelaide South</span>
       <button class="nav-toggle">Menu</button>
       <ul class="nav-links">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="registration.html" class="active">Register</a></li>
-        <li><a href="rules.html">Rules</a></li>
-        <li><a href="faq.html">FAQ</a></li>
-        <li><a href="contact.html">Contact</a></li>
+        <li><a href="/">Home</a></li>
+        <li><a href="/registration" class="active">Register</a></li>
+        <li><a href="/rules">Rules</a></li>
+        <li><a href="/faq">FAQ</a></li>
+        <li><a href="/contact">Contact</a></li>
       </ul>
       <span class="date-badge">26 · 09 · 2026</span>
     </nav>
@@ -42,6 +85,32 @@
       <h1 class="page-title">Register</h1>
       <p class="page-subtitle">Team Registration</p>
       <div class="page-divider"></div>
+
+      <div id="slots-banner" style="margin-bottom:2.5rem;">
+        <div style="display:flex;align-items:center;gap:1.5rem;">
+          <div id="slots-number" style="font-family:'Inter',sans-serif;font-weight:900;font-size:3.5rem;line-height:1;color:var(--ember);min-width:60px;text-align:center;">—</div>
+          <div style="flex:1;">
+            <div style="font-family:'Inter',sans-serif;font-weight:700;font-size:0.85rem;letter-spacing:0.05em;color:var(--white);margin-bottom:0.4rem;">Slots Remaining</div>
+            <div id="slots-bar-wrap" style="height:10px;background:rgba(245,245,240,0.08);border-radius:5px;overflow:hidden;display:flex;">
+              <div id="slots-bar-sa" style="height:100%;width:0%;background:var(--ember);transition:width 0.8s cubic-bezier(0.4,0,0.2,1);"></div>
+              <div id="slots-bar-open" style="height:100%;width:0%;background:var(--flame-orange);transition:width 0.8s cubic-bezier(0.4,0,0.2,1);"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.5rem;">
+              <div style="display:flex;gap:1rem;align-items:center;">
+                <span style="display:flex;align-items:center;gap:0.3rem;">
+                  <span style="width:8px;height:8px;border-radius:50%;background:var(--ember);display:inline-block;"></span>
+                  <span id="slots-sa-label" class="label-text" style="margin:0;color:var(--grey);font-size:0.55rem;">SA: —</span>
+                </span>
+                <span style="display:flex;align-items:center;gap:0.3rem;">
+                  <span style="width:8px;height:8px;border-radius:50%;background:var(--flame-orange);display:inline-block;"></span>
+                  <span id="slots-open-label" class="label-text" style="margin:0;color:var(--grey);font-size:0.55rem;">Open: —</span>
+                </span>
+              </div>
+              <span id="slots-label" class="label-text" style="margin:0;color:var(--grey);font-size:0.55rem;">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <form id="reg-form" novalidate>
         <div class="form-row">
@@ -125,7 +194,7 @@
         <p class="section-heading">Registration Submitted</p>
         <p class="body-text">Thanks for registering your team. We'll be in touch soon.</p>
         <button class="form-submit" id="download-pdf" style="margin-top:1.5rem;">Download Registration PDF</button>
-        <a href="index.html" class="form-submit" style="display:inline-block;text-decoration:none;margin-top:1rem;background:transparent;border:1px solid var(--ember);color:var(--ember);">Back to Home</a>
+        <a href="/" class="form-submit" style="display:inline-block;text-decoration:none;margin-top:1rem;background:transparent;border:1px solid var(--ember);color:var(--ember);">Back to Home</a>
       </div>
     </div>
 
@@ -297,6 +366,16 @@
 
 
   </script>
+  <div class="slots-popup-overlay" id="slots-popup">
+    <div class="slots-popup">
+      <button class="slots-popup-close" id="slots-popup-close">&times;</button>
+      <div class="slots-popup-icon">&#128308;</div>
+      <h3 id="slots-popup-title">Registrations Full</h3>
+      <p id="slots-popup-msg">Sorry, all open slots have been filled. The remaining spots are reserved for SA teams.</p>
+      <button class="slots-popup-btn" id="slots-popup-ok">Got it</button>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
   <script>
@@ -304,6 +383,112 @@
       'https://tsxfidulfdmmkaavtgwr.supabase.co',
       'sb_publishable_i2ffIbcqV5jv8uEd6sdFHw_kNcB2Ege'
     );
+
+    // Fetch team slots
+    const MAX_TEAMS = 8;
+    const SA_RESERVED = 4; // Slots reserved for SA teams (2 already registered, 2 remaining)
+    const OPEN_SLOTS = MAX_TEAMS - SA_RESERVED; // 6 open to anyone
+    let slotsData = null;
+
+    (async () => {
+      const numEl = document.getElementById('slots-number');
+      const barSaEl = document.getElementById('slots-bar-sa');
+      const barOpenEl = document.getElementById('slots-bar-open');
+      const saLabelEl = document.getElementById('slots-sa-label');
+      const openLabelEl = document.getElementById('slots-open-label');
+      const labelEl = document.getElementById('slots-label');
+      try {
+        const res = await fetch('/api/slots');
+        if (!res.ok) throw new Error();
+        slotsData = await res.json();
+        const { count, saCount } = slotsData;
+        const interstateCount = count - saCount;
+        const saReservedUsed = Math.min(saCount, SA_RESERVED);
+        const saInOpen = Math.max(0, saCount - SA_RESERVED);
+        const openUsed = interstateCount + saInOpen;
+        const openRemaining = Math.max(0, OPEN_SLOTS - openUsed);
+        const reservedRemaining = Math.max(0, SA_RESERVED - saReservedUsed);
+        const totalRemaining = openRemaining + reservedRemaining;
+
+        numEl.textContent = totalRemaining;
+        barSaEl.style.width = ((saReservedUsed / MAX_TEAMS) * 100) + '%';
+        barOpenEl.style.width = ((openUsed / MAX_TEAMS) * 100) + '%';
+
+        saLabelEl.textContent = 'SA: ' + saReservedUsed + '/' + SA_RESERVED + ' filled';
+        openLabelEl.textContent = 'Open: ' + openUsed + '/' + OPEN_SLOTS + ' filled';
+
+        if (count >= MAX_TEAMS) {
+          numEl.style.color = 'var(--grey)';
+          labelEl.textContent = 'All slots filled — registrations closed';
+          labelEl.style.color = 'var(--ember)';
+          barSaEl.style.background = 'var(--grey)';
+          barOpenEl.style.background = 'var(--grey)';
+          document.getElementById('reg-form').style.display = 'none';
+        } else if (openRemaining === 0 && reservedRemaining > 0) {
+          labelEl.textContent = reservedRemaining + ' SA slot' + (reservedRemaining > 1 ? 's' : '') + ' remaining';
+          labelEl.style.color = 'var(--ember)';
+        } else if (totalRemaining <= 2) {
+          labelEl.textContent = 'Almost full — register now';
+          labelEl.style.color = 'var(--ember)';
+        } else {
+          labelEl.textContent = count + ' of ' + MAX_TEAMS + ' slots taken';
+        }
+      } catch (e) {
+        numEl.textContent = '?';
+        labelEl.textContent = 'Unable to load availability';
+      }
+    })();
+
+    // Popup helpers
+    const slotsPopup = document.getElementById('slots-popup');
+    const slotsPopupTitle = document.getElementById('slots-popup-title');
+    const slotsPopupMsg = document.getElementById('slots-popup-msg');
+
+    function showSlotsPopup(title, msg) {
+      slotsPopupTitle.textContent = title;
+      slotsPopupMsg.textContent = msg;
+      slotsPopup.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeSlotsPopup() {
+      slotsPopup.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+    document.getElementById('slots-popup-ok').addEventListener('click', closeSlotsPopup);
+    document.getElementById('slots-popup-close').addEventListener('click', closeSlotsPopup);
+    slotsPopup.addEventListener('click', (e) => { if (e.target === slotsPopup) closeSlotsPopup(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSlotsPopup(); });
+
+    // When open slots are full, show popup for interstate — allow SA
+    const regStateSelect = document.getElementById('reg-state');
+    regStateSelect.addEventListener('change', () => {
+      if (!slotsData) return;
+      const { count, saCount } = slotsData;
+      const interstateCount = count - saCount;
+      const saInOpen = Math.max(0, saCount - SA_RESERVED);
+      const openUsed = interstateCount + saInOpen;
+      const openFull = openUsed >= OPEN_SLOTS;
+      const reservedRemaining = Math.max(0, SA_RESERVED - Math.min(saCount, SA_RESERVED));
+      const selectedState = regStateSelect.value;
+
+      const submitBtn = document.getElementById('reg-submit');
+      const errorEl = document.getElementById('reg-error');
+
+      if (count >= MAX_TEAMS) {
+        submitBtn.disabled = true;
+      } else if (selectedState === 'SA' && reservedRemaining === 0) {
+        submitBtn.disabled = true;
+        errorEl.style.display = 'none';
+        showSlotsPopup('SA Slots Full', 'All SA reserved slots have been filled.');
+      } else if (selectedState !== 'SA' && openFull) {
+        submitBtn.disabled = true;
+        errorEl.style.display = 'none';
+        showSlotsPopup('Open Slots Full', 'Sorry, all open registration slots have been filled. The remaining spots are reserved for SA teams only.');
+      } else {
+        submitBtn.disabled = false;
+        errorEl.style.display = 'none';
+      }
+    });
 
     // Validation helpers
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -386,27 +571,35 @@
       document.getElementById('reg-form').style.display = 'none';
       document.getElementById('reg-loading').style.display = 'block';
 
-      const { error } = await sb.from('registrations').insert({
-        first_name: firstName,
-        last_name: lastName,
-        email,
-        parish,
-        state,
-        team_name: teamName,
-        players,
-        captain,
-        payment_ref: paymentRef
-      });
-
-      document.getElementById('reg-loading').style.display = 'none';
-
-      if (error) {
+      let regResult;
+      try {
+        const resp = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            first_name: firstName,
+            last_name: lastName,
+            email,
+            parish,
+            state,
+            team_name: teamName,
+            players,
+            captain,
+            payment_ref: paymentRef
+          })
+        });
+        regResult = await resp.json();
+        if (!resp.ok) throw new Error(regResult.error || 'Registration failed');
+      } catch (err) {
+        document.getElementById('reg-loading').style.display = 'none';
         document.getElementById('reg-form').style.display = '';
-        errorEl.textContent = 'Something went wrong. Please try again.';
+        errorEl.textContent = err.message || 'Something went wrong. Please try again.';
         errorEl.style.display = 'block';
-        console.error(error);
+        console.error(err);
         return;
       }
+
+      document.getElementById('reg-loading').style.display = 'none';
 
       // Store data for PDF
       window._regData = { firstName, lastName, email, parish, state, teamName: teamName || '—', players, captain, paymentRef };
@@ -508,5 +701,6 @@
       doc.save(fileName);
     });
   </script>
+
 </body>
 </html>

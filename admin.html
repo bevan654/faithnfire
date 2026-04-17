@@ -4,30 +4,200 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin — Faith & Fire</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: Arial, sans-serif; background: #111; color: #eee; padding: 2rem; }
-  .login-box { max-width: 320px; margin: 4rem auto; }
-  .login-box h1 { font-size: 1.3rem; margin-bottom: 1rem; }
-  .login-box input { display: block; width: 100%; padding: 0.5rem; margin-bottom: 0.75rem; background: #222; border: 1px solid #444; color: #eee; border-radius: 4px; }
-  .login-box button { padding: 0.5rem 1.5rem; background: #c85028; border: none; color: #fff; border-radius: 4px; cursor: pointer; }
-  .login-box .error { color: #f66; font-size: 0.85rem; margin-bottom: 0.75rem; display: none; }
-  #admin-panel { display: none; }
-  h1 { font-size: 1.4rem; margin-bottom: 1rem; }
-  .stats { margin-bottom: 1.5rem; font-size: 0.9rem; color: #aaa; }
-  .stats span { color: #c85028; font-weight: bold; }
+  body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #e8e8e8; padding: 0; min-height: 100vh; }
+
+  /* Login */
+  .login-box { max-width: 340px; margin: 0 auto; padding-top: 15vh; }
+  .login-box h1 { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 2px; margin-bottom: 1.5rem; color: #ff6a00; }
+  .login-box input { display: block; width: 100%; padding: 0.7rem 0.8rem; margin-bottom: 0.85rem; background: rgba(255,255,255,0.04); border: 1px solid #2a2a2a; color: #eee; border-radius: 6px; font-size: 0.85rem; transition: border-color 0.2s; }
+  .login-box input:focus { border-color: #ff6a00; outline: none; }
+  .login-box button { padding: 0.65rem 2rem; background: #ff6a00; border: none; color: #fff; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: background 0.2s; }
+  .login-box button:hover { background: #ff8533; }
+  .login-box .error { color: #ff4444; font-size: 0.8rem; margin-bottom: 0.75rem; display: none; }
+
+  /* Panel */
+  #admin-panel { display: none; max-width: 1400px; margin: 0 auto; padding: 2rem 3rem 4rem; }
+
+  /* Registrations */
+  h1 { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 1.5px; margin-bottom: 1rem; color: #fff; }
+  .stats { margin-bottom: 1.5rem; font-size: 0.85rem; color: #777; }
+  .stats span { color: #ff6a00; font-weight: 600; }
   table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-  th, td { padding: 0.5rem; text-align: left; border-bottom: 1px solid #333; }
-  th { background: #1a1a1a; color: #c85028; font-weight: 600; position: sticky; top: 0; }
-  tr:hover { background: #1a1a1a; }
-  .expand-btn { background: none; border: none; color: #c85028; cursor: pointer; font-size: 0.8rem; text-decoration: underline; }
-  .player-detail { background: #1a1a1a; padding: 0.75rem; margin: 0.25rem 0; border-left: 2px solid #c85028; font-size: 0.75rem; }
-  .player-detail strong { color: #c85028; }
-  .ref { font-family: monospace; color: #c85028; }
-  .time { color: #888; font-size: 0.75rem; }
-  #loading { color: #888; }
+  th, td { padding: 0.6rem 0.5rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  th { background: rgba(255,106,0,0.06); color: #ff6a00; font-weight: 600; position: sticky; top: 0; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; }
+  tr:hover { background: rgba(255,255,255,0.02); }
+  .expand-btn { background: none; border: none; color: #ff6a00; cursor: pointer; font-size: 0.8rem; text-decoration: underline; }
+  .edit-btn { background: none; border: none; color: #ff6a00; cursor: pointer; font-size: 0.75rem; text-decoration: underline; padding: 0.2rem 0.4rem; }
+  .edit-btn:hover { color: #ff8533; }
+  .player-detail { background: rgba(255,106,0,0.04); padding: 0.75rem; margin: 0.25rem 0; border-left: 2px solid #ff6a00; font-size: 0.75rem; border-radius: 0 4px 4px 0; }
+  .player-detail strong { color: #ff6a00; }
+  .ref { font-family: monospace; color: #ff6a00; }
+  .time { color: #666; font-size: 0.75rem; }
+  #loading { color: #666; }
   .search-box { margin-bottom: 1rem; }
-  .search-box input { padding: 0.5rem; background: #222; border: 1px solid #444; color: #eee; border-radius: 4px; width: 300px; }
+  .search-box input { padding: 0.6rem 1rem; background: rgba(255,255,255,0.04); border: 1px solid #2a2a2a; color: #eee; border-radius: 6px; width: 320px; font-size: 0.8rem; transition: border-color 0.2s; }
+  .search-box input:focus { border-color: #ff6a00; outline: none; }
+
+  /* Edit Modal */
+  .edit-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.8);
+    z-index: 1000;
+    display: flex; align-items: center; justify-content: center;
+    padding: 2rem;
+  }
+  .edit-modal {
+    background: #111;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    width: 100%; max-width: 720px; max-height: 90vh;
+    display: flex; flex-direction: column;
+  }
+  .edit-modal-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .edit-modal-header h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem; letter-spacing: 1.5px; color: #ff6a00; margin: 0;
+  }
+  .edit-close {
+    background: none; border: none; color: #666;
+    font-size: 1.5rem; cursor: pointer; line-height: 1;
+  }
+  .edit-close:hover { color: #fff; }
+  .edit-modal-body { padding: 1.5rem; overflow-y: auto; flex: 1; }
+  .edit-section-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.95rem; letter-spacing: 1.5px; color: #ff6a00;
+    margin-bottom: 1rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .edit-row { display: flex; gap: 1rem; }
+  .edit-field { flex: 1; margin-bottom: 0.75rem; }
+  .edit-field label {
+    display: block; font-size: 0.65rem; text-transform: uppercase;
+    letter-spacing: 1.5px; color: #555; margin-bottom: 0.3rem;
+  }
+  .edit-field input, .edit-field select {
+    display: block; width: 100%; padding: 0.55rem 0.7rem;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+    color: #eee; border-radius: 6px; font-size: 0.82rem;
+    font-family: 'Inter', sans-serif; transition: border-color 0.2s;
+  }
+  .edit-field input:focus, .edit-field select:focus { border-color: #ff6a00; outline: none; }
+  .edit-field select option { background: #1a1a1a; }
+
+  .edit-player-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem;
+  }
+  .edit-player-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 0.75rem;
+  }
+  .edit-player-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.85rem; letter-spacing: 1px; color: #ff6a00;
+  }
+  .edit-remove-player {
+    background: none; border: 1px solid rgba(255,80,80,0.3);
+    color: rgba(255,80,80,0.7); font-size: 0.65rem; letter-spacing: 1px;
+    text-transform: uppercase; padding: 0.25rem 0.6rem; border-radius: 4px; cursor: pointer;
+  }
+  .edit-remove-player:hover { border-color: rgba(255,80,80,0.8); color: #ff5050; }
+  .edit-add-player {
+    background: none; border: 1px solid rgba(255,106,0,0.3);
+    color: #ff6a00; font-size: 0.65rem; letter-spacing: 1px;
+    text-transform: uppercase; padding: 0.3rem 0.7rem; border-radius: 4px; cursor: pointer;
+  }
+  .edit-add-player:hover { border-color: #ff6a00; }
+
+  .edit-modal-footer {
+    display: flex; justify-content: flex-end; gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .edit-cancel {
+    padding: 0.6rem 1.5rem; background: none; border: 1px solid #2a2a2a;
+    color: #888; border-radius: 6px; cursor: pointer; font-size: 0.8rem;
+  }
+  .edit-cancel:hover { border-color: #555; color: #ccc; }
+  .edit-save {
+    padding: 0.6rem 1.5rem; background: #ff6a00; border: none;
+    color: #fff; border-radius: 6px; cursor: pointer; font-weight: 600;
+    font-size: 0.8rem; transition: background 0.2s;
+  }
+  .edit-save:hover { background: #ff8533; }
+  .edit-save:disabled { opacity: 0.5; cursor: not-allowed; }
+  .edit-error {
+    color: #ff4444; font-size: 0.8rem; padding: 0.6rem 0.8rem;
+    background: rgba(255,68,68,0.08); border: 1px solid rgba(255,68,68,0.2);
+    border-radius: 6px; margin-top: 1rem;
+  }
+
+  /* Tabs */
+  .admin-tabs {
+    display: flex; gap: 0; margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .admin-tab {
+    padding: 0.6rem 1.5rem; background: none; border: none;
+    color: #666; font-family: 'Bebas Neue', sans-serif; font-size: 1rem;
+    letter-spacing: 1.5px; cursor: pointer; border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .admin-tab:hover { color: #ccc; }
+  .admin-tab.active { color: #ff6a00; border-bottom-color: #ff6a00; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* Audit log */
+  .log-entry {
+    padding: 0.75rem 1rem; margin-bottom: 0.5rem;
+    background: rgba(255,255,255,0.02); border-left: 2px solid #ff6a00;
+    border-radius: 0 6px 6px 0; font-size: 0.8rem;
+  }
+  .log-entry .log-meta {
+    display: flex; gap: 1rem; align-items: center; margin-bottom: 0.35rem;
+    font-size: 0.7rem; color: #666;
+  }
+  .log-entry .log-user { color: #ff6a00; font-weight: 600; }
+  .log-entry .log-team { color: #aaa; }
+  .log-entry .log-changes { color: #888; font-size: 0.75rem; }
+  .log-entry .log-change-item { margin-top: 0.2rem; }
+  .log-entry .log-field { color: #ff6a00; }
+  .log-entry .log-old { color: #ff4444; text-decoration: line-through; }
+  .log-entry .log-new { color: #81c784; }
+  .log-empty { color: #555; font-size: 0.85rem; padding: 2rem; text-align: center; }
+  .admin-user-badge {
+    font-size: 0.75rem; color: #666; margin-bottom: 1.5rem;
+  }
+  .admin-user-badge span { color: #ff6a00; font-weight: 600; }
+  .admin-logout { background: none; border: none; color: #555; cursor: pointer; font-size: 0.75rem; text-decoration: underline; margin-left: 1rem; }
+  .admin-logout:hover { color: #ff6a00; }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 2rem; right: 2rem;
+    padding: 0.75rem 1.5rem; border-radius: 8px;
+    font-size: 0.8rem; font-weight: 500; z-index: 2000;
+    animation: toast-in 0.3s ease;
+  }
+  .toast-success { background: rgba(76,175,80,0.15); border: 1px solid rgba(76,175,80,0.3); color: #81c784; }
+  .toast-error { background: rgba(255,68,68,0.15); border: 1px solid rgba(255,68,68,0.3); color: #ff6b6b; }
+  @keyframes toast-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  @media (max-width: 640px) {
+    .edit-row { flex-direction: column; gap: 0; }
+    .edit-modal { max-height: 95vh; }
+    #admin-panel { padding: 1.5rem 1rem 3rem; }
+  }
 </style>
 </head>
 <body>
@@ -41,59 +211,156 @@
 </div>
 
 <div id="admin-panel">
-  <h1>Registrations</h1>
-  <div class="stats" id="stats"></div>
-  <div class="search-box">
-    <input type="text" id="search" placeholder="Search by name, parish, team, email...">
+  <div class="admin-user-badge">Logged in as <span id="admin-username"></span><button class="admin-logout" id="admin-logout">Logout</button></div>
+
+  <div class="admin-tabs">
+    <button class="admin-tab active" data-tab="registrations">Registrations</button>
+    <button class="admin-tab" data-tab="audit-log">Audit Log</button>
   </div>
-  <p id="loading">Loading...</p>
-  <table id="reg-table" style="display:none">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Parish</th>
-        <th>State</th>
-        <th>Team</th>
-        <th>Captain</th>
-        <th>Players</th>
-        <th>Payment Ref</th>
-        <th>Date</th>
-      </tr>
-    </thead>
-    <tbody id="reg-body"></tbody>
-  </table>
+
+  <div class="tab-content active" id="tab-registrations">
+    <h1>Registrations</h1>
+    <div class="stats" id="stats"></div>
+    <div class="search-box">
+      <input type="text" id="search" placeholder="Search by name, parish, team, email...">
+    </div>
+    <p id="loading">Loading...</p>
+    <table id="reg-table" style="display:none">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Parish</th>
+          <th>State</th>
+          <th>Team</th>
+          <th>Captain</th>
+          <th>Players</th>
+          <th>Payment Ref</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="reg-body"></tbody>
+    </table>
+  </div>
+
+  <div class="tab-content" id="tab-audit-log">
+    <h1>Audit Log</h1>
+    <p id="log-loading" style="color:#666">Loading...</p>
+    <div id="log-entries"></div>
+  </div>
+
+  <!-- Edit Modal -->
+  <div id="edit-modal" class="edit-overlay" style="display:none">
+    <div class="edit-modal">
+      <div class="edit-modal-header">
+        <h2>Edit Registration</h2>
+        <button class="edit-close" id="edit-close-btn">&times;</button>
+      </div>
+      <div class="edit-modal-body">
+        <input type="hidden" id="edit-id">
+
+        <div class="edit-section-label">Contact Details</div>
+        <div class="edit-row">
+          <div class="edit-field"><label>First Name</label><input type="text" id="edit-first"></div>
+          <div class="edit-field"><label>Last Name</label><input type="text" id="edit-last"></div>
+        </div>
+        <div class="edit-field"><label>Email</label><input type="email" id="edit-email"></div>
+        <div class="edit-row">
+          <div class="edit-field"><label>Parish</label><input type="text" id="edit-parish"></div>
+          <div class="edit-field">
+            <label>State</label>
+            <select id="edit-state">
+              <option value="">—</option>
+              <option value="SA">SA</option>
+              <option value="VIC">VIC</option>
+              <option value="NSW">NSW</option>
+              <option value="QLD">QLD</option>
+              <option value="WA">WA</option>
+              <option value="TAS">TAS</option>
+              <option value="NT">NT</option>
+              <option value="ACT">ACT</option>
+            </select>
+          </div>
+        </div>
+        <div class="edit-row">
+          <div class="edit-field"><label>Team Name</label><input type="text" id="edit-team"></div>
+          <div class="edit-field"><label>Captain</label><input type="text" id="edit-captain"></div>
+        </div>
+        <div class="edit-field"><label>Payment Reference</label><input type="text" id="edit-payref"></div>
+
+        <div class="edit-section-label" style="margin-top:1.5rem">
+          Players
+          <button type="button" class="edit-add-player" id="edit-add-player">+ Add Player</button>
+        </div>
+        <div id="edit-players"></div>
+
+        <div id="edit-error" class="edit-error" style="display:none"></div>
+      </div>
+      <div class="edit-modal-footer">
+        <button class="edit-cancel" id="edit-cancel">Cancel</button>
+        <button class="edit-save" id="edit-save">Save Changes</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
+  // --- Login ---
+  let adminUser = '';
+  let adminPass = '';
+  let authHeader = '';
+
   document.getElementById('login-btn').addEventListener('click', () => {
     const user = document.getElementById('login-user').value.trim();
     const pass = document.getElementById('login-pass').value.trim();
     const err = document.getElementById('login-error');
 
-    if (user !== 'admin' || pass !== 'admin') {
+    if (!user || user.toLowerCase() === 'admin') {
+      err.textContent = !user ? 'Please enter a username' : '"admin" is not allowed as a username';
+      err.style.display = 'block';
+      return;
+    }
+
+    if (pass !== 'godisgood') {
       err.textContent = 'Invalid credentials';
       err.style.display = 'block';
       return;
     }
 
+    adminUser = user;
+    adminPass = pass;
+    authHeader = 'Bearer ' + user + ':' + pass;
+
     err.style.display = 'none';
     document.getElementById('login-box').style.display = 'none';
     document.getElementById('admin-panel').style.display = 'block';
-    loadData(user, pass);
+    document.getElementById('admin-username').textContent = user;
+    loadData();
+  });
+
+  document.getElementById('admin-logout').addEventListener('click', () => {
+    adminUser = '';
+    adminPass = '';
+    authHeader = '';
+    document.getElementById('admin-panel').style.display = 'none';
+    document.getElementById('login-box').style.display = '';
+    document.getElementById('login-user').value = '';
+    document.getElementById('login-pass').value = '';
   });
 
   document.querySelectorAll('#login-box input').forEach(el => {
     el.addEventListener('keydown', (e) => { if (e.key === 'Enter') document.getElementById('login-btn').click(); });
   });
 
+  // --- Registrations ---
   let allRows = [];
 
-  async function loadData(user, pass) {
+  async function loadData() {
     try {
       const res = await fetch('/api/registrations', {
-        headers: { 'Authorization': 'Bearer ' + user + ':' + pass }
+        headers: { 'Authorization': authHeader }
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
@@ -103,11 +370,15 @@
 
       document.getElementById('loading').style.display = 'none';
       allRows = data || [];
-      document.getElementById('stats').innerHTML = 'Total registrations: <span>' + allRows.length + '</span> · Total players: <span>' + allRows.reduce((s, r) => s + (r.players ? r.players.length : 0), 0) + '</span>';
+      updateStats();
       renderTable(allRows);
     } catch (e) {
       document.getElementById('loading').textContent = 'Error: ' + e.message;
     }
+  }
+
+  function updateStats() {
+    document.getElementById('stats').innerHTML = 'Total registrations: <span>' + allRows.length + '</span> &middot; Total players: <span>' + allRows.reduce((s, r) => s + (r.players ? r.players.length : 0), 0) + '</span>';
   }
 
   function renderTable(rows) {
@@ -116,7 +387,7 @@
     body.innerHTML = '';
 
     if (rows.length === 0) {
-      body.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#888;padding:2rem">No registrations found</td></tr>';
+      body.innerHTML = '<tr><td colspan="11" style="text-align:center;color:#555;padding:2rem">No registrations found</td></tr>';
       table.style.display = 'table';
       return;
     }
@@ -126,27 +397,27 @@
       const players = r.players || [];
       const date = r.created_at ? new Date(r.created_at).toLocaleDateString('en-AU') : '—';
 
-      tr.innerHTML = `
-        <td>${i + 1}</td>
-        <td>${esc(r.first_name)} ${esc(r.last_name)}</td>
-        <td>${esc(r.email)}</td>
-        <td>${esc(r.parish)}</td>
-        <td>${esc(r.state || '—')}</td>
-        <td>${esc(r.team_name || '—')}</td>
-        <td>${esc(r.captain || '—')}</td>
-        <td><button class="expand-btn" data-idx="${i}">${players.length} players</button></td>
-        <td class="ref">${esc(r.payment_ref || '—')}</td>
-        <td class="time">${date}</td>
-      `;
+      tr.innerHTML =
+        '<td>' + (i + 1) + '</td>' +
+        '<td>' + esc(r.first_name) + ' ' + esc(r.last_name) + '</td>' +
+        '<td>' + esc(r.email) + '</td>' +
+        '<td>' + esc(r.parish) + '</td>' +
+        '<td>' + esc(r.state || '—') + '</td>' +
+        '<td>' + esc(r.team_name || '—') + '</td>' +
+        '<td>' + esc(r.captain || '—') + '</td>' +
+        '<td><button class="expand-btn" data-idx="' + i + '">' + players.length + ' players</button></td>' +
+        '<td class="ref">' + esc(r.payment_ref || '—') + '</td>' +
+        '<td class="time">' + date + '</td>' +
+        '<td><button class="edit-btn" data-reg-id="' + esc(r.id) + '">Edit</button></td>';
       body.appendChild(tr);
 
       const detailTr = document.createElement('tr');
       detailTr.id = 'detail-' + i;
       detailTr.style.display = 'none';
       const detailTd = document.createElement('td');
-      detailTd.colSpan = 10;
+      detailTd.colSpan = 11;
       detailTd.innerHTML = players.map((p, j) =>
-        `<div class="player-detail"><strong>Player ${j + 1}:</strong> ${esc(p.first_name)} ${esc(p.last_name)} · Age ${p.age} · ${esc(p.phone)}<br>Emergency: ${esc(p.emergency_name)} (${esc(p.relation)}) — ${esc(p.emergency_phone)}</div>`
+        '<div class="player-detail"><strong>Player ' + (j + 1) + ':</strong> ' + esc(p.first_name) + ' ' + esc(p.last_name) + ' &middot; Age ' + p.age + ' &middot; ' + esc(p.phone) + '<br>Emergency: ' + esc(p.emergency_name) + ' (' + esc(p.relation) + ') — ' + esc(p.emergency_phone) + '</div>'
       ).join('');
       detailTr.appendChild(detailTd);
       body.appendChild(detailTr);
@@ -155,13 +426,21 @@
     table.style.display = 'table';
   }
 
+  // Expand player details
   document.getElementById('reg-body').addEventListener('click', (e) => {
-    if (!e.target.classList.contains('expand-btn')) return;
-    const idx = e.target.dataset.idx;
-    const row = document.getElementById('detail-' + idx);
-    row.style.display = row.style.display === 'none' ? '' : 'none';
+    if (e.target.classList.contains('expand-btn')) {
+      const idx = e.target.dataset.idx;
+      const row = document.getElementById('detail-' + idx);
+      row.style.display = row.style.display === 'none' ? '' : 'none';
+    }
+    if (e.target.classList.contains('edit-btn')) {
+      const regId = e.target.dataset.regId;
+      const reg = allRows.find(r => String(r.id) === regId);
+      if (reg) openEditModal(reg);
+    }
   });
 
+  // Search
   document.getElementById('search').addEventListener('input', (e) => {
     const q = e.target.value.toLowerCase();
     if (!q) return renderTable(allRows);
@@ -177,6 +456,254 @@
     const d = document.createElement('div');
     d.textContent = s;
     return d.innerHTML;
+  }
+
+  // --- Edit Modal ---
+  function openEditModal(reg) {
+    document.getElementById('edit-id').value = reg.id;
+    document.getElementById('edit-first').value = reg.first_name || '';
+    document.getElementById('edit-last').value = reg.last_name || '';
+    document.getElementById('edit-email').value = reg.email || '';
+    document.getElementById('edit-parish').value = reg.parish || '';
+    document.getElementById('edit-state').value = reg.state || '';
+    document.getElementById('edit-team').value = reg.team_name || '';
+    document.getElementById('edit-captain').value = reg.captain || '';
+    document.getElementById('edit-payref').value = reg.payment_ref || '';
+
+    const container = document.getElementById('edit-players');
+    container.innerHTML = '';
+    (reg.players || []).forEach((p, i) => {
+      container.appendChild(createEditPlayerCard(p, i));
+    });
+
+    document.getElementById('edit-error').style.display = 'none';
+    document.getElementById('edit-modal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function createEditPlayerCard(p, i) {
+    const card = document.createElement('div');
+    card.className = 'edit-player-card';
+    card.innerHTML =
+      '<div class="edit-player-header">' +
+        '<span class="edit-player-num">Player ' + (i + 1) + '</span>' +
+        '<button type="button" class="edit-remove-player">Remove</button>' +
+      '</div>' +
+      '<div class="edit-row">' +
+        '<div class="edit-field"><label>First Name</label><input type="text" data-pf="first_name"></div>' +
+        '<div class="edit-field"><label>Last Name</label><input type="text" data-pf="last_name"></div>' +
+      '</div>' +
+      '<div class="edit-row">' +
+        '<div class="edit-field"><label>Age</label><input type="number" data-pf="age" min="5" max="99"></div>' +
+        '<div class="edit-field"><label>Phone</label><input type="tel" data-pf="phone"></div>' +
+      '</div>' +
+      '<div class="edit-row">' +
+        '<div class="edit-field"><label>Emergency Name</label><input type="text" data-pf="emergency_name"></div>' +
+        '<div class="edit-field"><label>Emergency Phone</label><input type="tel" data-pf="emergency_phone"></div>' +
+      '</div>' +
+      '<div class="edit-field"><label>Relation</label><input type="text" data-pf="relation"></div>';
+
+    // Set values via DOM property (XSS-safe)
+    card.querySelector('[data-pf="first_name"]').value = p.first_name || '';
+    card.querySelector('[data-pf="last_name"]').value = p.last_name || '';
+    card.querySelector('[data-pf="age"]').value = p.age || '';
+    card.querySelector('[data-pf="phone"]').value = p.phone || '';
+    card.querySelector('[data-pf="emergency_name"]').value = p.emergency_name || '';
+    card.querySelector('[data-pf="emergency_phone"]').value = p.emergency_phone || '';
+    card.querySelector('[data-pf="relation"]').value = p.relation || '';
+    return card;
+  }
+
+  function closeEditModal() {
+    document.getElementById('edit-modal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  function renumberEditPlayers() {
+    document.querySelectorAll('#edit-players .edit-player-card').forEach((card, i) => {
+      card.querySelector('.edit-player-num').textContent = 'Player ' + (i + 1);
+    });
+  }
+
+  // Close handlers
+  document.getElementById('edit-close-btn').addEventListener('click', closeEditModal);
+  document.getElementById('edit-cancel').addEventListener('click', closeEditModal);
+  document.getElementById('edit-modal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('edit-modal')) closeEditModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && document.getElementById('edit-modal').style.display !== 'none') closeEditModal();
+  });
+
+  // Add player
+  document.getElementById('edit-add-player').addEventListener('click', () => {
+    const container = document.getElementById('edit-players');
+    const count = container.querySelectorAll('.edit-player-card').length;
+    if (count >= 10) return;
+    const empty = { first_name: '', last_name: '', age: '', phone: '', emergency_name: '', emergency_phone: '', relation: '' };
+    container.appendChild(createEditPlayerCard(empty, count));
+    renumberEditPlayers();
+  });
+
+  // Remove player
+  document.getElementById('edit-players').addEventListener('click', (e) => {
+    if (!e.target.classList.contains('edit-remove-player')) return;
+    const container = document.getElementById('edit-players');
+    if (container.querySelectorAll('.edit-player-card').length <= 6) {
+      showEditError('Minimum 6 players required.');
+      return;
+    }
+    e.target.closest('.edit-player-card').remove();
+    renumberEditPlayers();
+    document.getElementById('edit-error').style.display = 'none';
+  });
+
+  // Save
+  document.getElementById('edit-save').addEventListener('click', async () => {
+    const errorEl = document.getElementById('edit-error');
+    errorEl.style.display = 'none';
+
+    const id = document.getElementById('edit-id').value;
+    const first_name = document.getElementById('edit-first').value.trim();
+    const last_name = document.getElementById('edit-last').value.trim();
+    const email = document.getElementById('edit-email').value.trim();
+    const parish = document.getElementById('edit-parish').value.trim();
+    const state = document.getElementById('edit-state').value;
+    const team_name = document.getElementById('edit-team').value.trim();
+    const captain = document.getElementById('edit-captain').value.trim();
+    const payment_ref = document.getElementById('edit-payref').value.trim();
+
+    if (!first_name || !last_name) return showEditError('First and last name are required.');
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showEditError('Valid email is required.');
+    if (!parish) return showEditError('Parish is required.');
+
+    const players = [];
+    const cards = document.querySelectorAll('#edit-players .edit-player-card');
+    for (let i = 0; i < cards.length; i++) {
+      const card = cards[i];
+      const p = {
+        first_name: card.querySelector('[data-pf="first_name"]').value.trim(),
+        last_name: card.querySelector('[data-pf="last_name"]').value.trim(),
+        age: parseInt(card.querySelector('[data-pf="age"]').value) || 0,
+        phone: card.querySelector('[data-pf="phone"]').value.trim(),
+        emergency_name: card.querySelector('[data-pf="emergency_name"]').value.trim(),
+        emergency_phone: card.querySelector('[data-pf="emergency_phone"]').value.trim(),
+        relation: card.querySelector('[data-pf="relation"]').value.trim(),
+      };
+      if (!p.first_name || !p.last_name || !p.age || !p.phone || !p.emergency_name || !p.emergency_phone || !p.relation) {
+        return showEditError('Player ' + (i + 1) + ': All fields are required.');
+      }
+      if (p.age < 5 || p.age > 99) return showEditError('Player ' + (i + 1) + ': Age must be between 5 and 99.');
+      players.push(p);
+    }
+
+    if (players.length < 6) return showEditError('At least 6 players are required.');
+
+    const saveBtn = document.getElementById('edit-save');
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving...';
+
+    try {
+      const res = await fetch('/api/update-registration', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': authHeader
+        },
+        body: JSON.stringify({ id, first_name, last_name, email, parish, state, team_name, captain, payment_ref, players })
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || 'Update failed');
+      }
+
+      closeEditModal();
+      showToast('Registration updated successfully.', 'success');
+      await loadData();
+    } catch (e) {
+      showEditError(e.message);
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Save Changes';
+    }
+  });
+
+  function showEditError(msg) {
+    const el = document.getElementById('edit-error');
+    el.textContent = msg;
+    el.style.display = 'block';
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  // --- Tabs ---
+  document.querySelectorAll('.admin-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+      if (tab.dataset.tab === 'audit-log') loadAuditLog();
+    });
+  });
+
+  // --- Audit Log ---
+  async function loadAuditLog() {
+    const container = document.getElementById('log-entries');
+    const loading = document.getElementById('log-loading');
+    loading.style.display = 'block';
+    container.innerHTML = '';
+
+    try {
+      const res = await fetch('/api/audit-log', {
+        headers: { 'Authorization': authHeader }
+      });
+      if (!res.ok) throw new Error('Failed to load audit log');
+      const logs = await res.json();
+
+      loading.style.display = 'none';
+
+      if (!logs || logs.length === 0) {
+        container.innerHTML = '<div class="log-empty">No changes logged yet.</div>';
+        return;
+      }
+
+      logs.forEach(entry => {
+        const div = document.createElement('div');
+        div.className = 'log-entry';
+        const date = entry.created_at ? new Date(entry.created_at).toLocaleString('en-AU') : '—';
+        const changes = entry.changes || [];
+
+        let changesHtml = '';
+        changes.forEach(c => {
+          changesHtml += '<div class="log-change-item"><span class="log-field">' + esc(c.field) + '</span>: <span class="log-old">' + esc(String(c.old || '—')) + '</span> → <span class="log-new">' + esc(String(c.new || '—')) + '</span></div>';
+        });
+
+        div.innerHTML =
+          '<div class="log-meta">' +
+            '<span class="log-user">' + esc(entry.username) + '</span>' +
+            '<span class="log-team">' + esc(entry.team_name || '—') + '</span>' +
+            '<span>' + date + '</span>' +
+          '</div>' +
+          '<div class="log-changes">' + changesHtml + '</div>';
+
+        container.appendChild(div);
+      });
+    } catch (e) {
+      loading.textContent = 'Error loading audit log.';
+    }
+  }
+
+  function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = 'toast toast-' + type;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transition = 'opacity 0.3s';
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
   }
 </script>
 </body>
