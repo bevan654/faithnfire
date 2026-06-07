@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Register — Faith & Fire Invitational</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
-<link rel="stylesheet" href="nav.css">
+<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="../nav.css">
 <style>
   .loading-spinner {
     width: 40px; height: 40px; margin: 0 auto;
@@ -41,7 +41,7 @@
     font-size: 1.15rem; color: var(--white); margin: 0 0 0.6rem;
   }
   .slots-popup p {
-    font-family: 'Cormorant Garamond', serif; font-size: 1.05rem;
+    font-family: 'Inter', sans-serif; font-size: 0.9rem;
     color: var(--grey); line-height: 1.6; margin: 0 0 1.5rem;
   }
   .slots-popup-btn {
@@ -73,7 +73,7 @@
       <button class="nav-toggle">Menu</button>
       <ul class="nav-links">
         <li><a href="/">Home</a></li>
-        <li class="nav-dropdown"><a href="/registration" class="active">Register</a><ul class="nav-sub"><li><a href="/registration" class="active">Teams</a></li><li><a href="/registration/girls">Girls</a></li></ul></li>
+        <li class="nav-dropdown"><a href="/registration" class="active">Register</a><ul class="nav-sub"><li><a href="/registration">Teams</a></li><li><a href="/registration/girls" class="active">Girls</a></li></ul></li>
         <li><a href="/rules">Rules</a></li>
         <li><a href="/faq">FAQ</a></li>
         <li><a href="/contact">Contact</a></li>
@@ -83,7 +83,7 @@
 
     <div class="page-content">
       <h1 class="page-title">Register</h1>
-      <p class="page-subtitle">Team Registration</p>
+      <p class="page-subtitle">Girls Team Registration</p>
       <div class="page-divider"></div>
 
       <div id="slots-banner" style="margin-bottom:2.5rem;">
@@ -91,21 +91,10 @@
           <div id="slots-number" style="font-family:'Inter',sans-serif;font-weight:900;font-size:3.5rem;line-height:1;color:var(--ember);min-width:60px;text-align:center;">—</div>
           <div style="flex:1;">
             <div style="font-family:'Inter',sans-serif;font-weight:700;font-size:0.85rem;letter-spacing:0.05em;color:var(--white);margin-bottom:0.4rem;">Slots Remaining</div>
-            <div id="slots-bar-wrap" style="height:10px;background:rgba(245,245,240,0.08);border-radius:5px;overflow:hidden;display:flex;">
-              <div id="slots-bar-sa" style="height:100%;width:0%;background:var(--ember);transition:width 0.8s cubic-bezier(0.4,0,0.2,1);"></div>
-              <div id="slots-bar-open" style="height:100%;width:0%;background:var(--flame-orange);transition:width 0.8s cubic-bezier(0.4,0,0.2,1);"></div>
+            <div id="slots-bar-wrap" style="height:10px;background:rgba(245,245,240,0.08);border-radius:5px;overflow:hidden;">
+              <div id="slots-bar" style="height:100%;width:0%;background:var(--ember);transition:width 0.8s cubic-bezier(0.4,0,0.2,1);"></div>
             </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.5rem;">
-              <div style="display:flex;gap:1rem;align-items:center;">
-                <span style="display:flex;align-items:center;gap:0.3rem;">
-                  <span style="width:8px;height:8px;border-radius:50%;background:var(--ember);display:inline-block;"></span>
-                  <span id="slots-sa-label" class="label-text" style="margin:0;color:var(--grey);font-size:0.55rem;">SA: —</span>
-                </span>
-                <span style="display:flex;align-items:center;gap:0.3rem;">
-                  <span style="width:8px;height:8px;border-radius:50%;background:var(--flame-orange);display:inline-block;"></span>
-                  <span id="slots-open-label" class="label-text" style="margin:0;color:var(--grey);font-size:0.55rem;">Open: —</span>
-                </span>
-              </div>
+            <div style="display:flex;justify-content:flex-end;margin-top:0.5rem;">
               <span id="slots-label" class="label-text" style="margin:0;color:var(--grey);font-size:0.55rem;">Loading...</span>
             </div>
           </div>
@@ -156,7 +145,7 @@
         </div>
 
         <div class="page-divider" style="margin:2.5rem 0"></div>
-        <p class="label-text" style="margin-bottom:1.5rem">Players — minimum 6, maximum 10</p>
+        <p class="label-text" style="margin-bottom:1.5rem">Players — minimum 6, maximum 15</p>
 
         <div class="player-grid" id="player-grid"></div>
 
@@ -170,13 +159,6 @@
               <option value="" disabled selected>Select a player</option>
             </select>
           </div>
-        </div>
-
-        <div class="page-divider" style="margin:2.5rem 0"></div>
-
-        <div class="payment-section">
-          <p class="section-heading" style="margin-bottom:0.5rem">Payment</p>
-          <p class="body-text" style="margin-bottom:0" id="payment-msg">Select your state above to see the registration fee.</p>
         </div>
 
         <div id="reg-error" class="form-error" style="display:none"></div>
@@ -204,22 +186,77 @@
     </footer>
   </div>
 
-  <script src="shared.js"></script>
+  <div class="slots-popup-overlay" id="slots-popup">
+    <div class="slots-popup">
+      <button class="slots-popup-close" id="slots-popup-close">&times;</button>
+      <div class="slots-popup-icon">&#128308;</div>
+      <h3 id="slots-popup-title">Registrations Full</h3>
+      <p id="slots-popup-msg">Sorry, all girls registration slots have been filled.</p>
+      <button class="slots-popup-btn" id="slots-popup-ok">Got it</button>
+    </div>
+  </div>
+
+  <script src="../shared.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
   <script>
-    // Update payment message based on state
-    const stateSelect = document.getElementById('reg-state');
-    const paymentMsg = document.getElementById('payment-msg');
-    stateSelect.addEventListener('change', () => {
-      const amt = stateSelect.value === 'SA' ? '$225' : '$175';
-      paymentMsg.innerHTML = 'Your registration fee is <strong>' + amt + ' per team</strong>. Once your registration is submitted, we will reach out to you with payment details via email.';
-    });
+    const MAX_TEAMS = 2;
+    let slotsData = null;
+
+    // Fetch slots
+    (async () => {
+      const numEl = document.getElementById('slots-number');
+      const barEl = document.getElementById('slots-bar');
+      const labelEl = document.getElementById('slots-label');
+      try {
+        const res = await fetch('/api/slots-girls');
+        if (!res.ok) throw new Error();
+        slotsData = await res.json();
+        const { count } = slotsData;
+        const remaining = Math.max(0, MAX_TEAMS - count);
+
+        numEl.textContent = remaining;
+        barEl.style.width = ((count / MAX_TEAMS) * 100) + '%';
+
+        if (count >= MAX_TEAMS) {
+          numEl.style.color = 'var(--grey)';
+          labelEl.textContent = 'All slots filled — registrations closed';
+          labelEl.style.color = 'var(--ember)';
+          barEl.style.background = 'var(--grey)';
+          document.getElementById('reg-form').style.display = 'none';
+        } else if (remaining === 1) {
+          labelEl.textContent = '1 slot remaining — register now';
+          labelEl.style.color = 'var(--ember)';
+        } else {
+          labelEl.textContent = count + ' of ' + MAX_TEAMS + ' slots taken';
+        }
+      } catch (e) {
+        numEl.textContent = '?';
+        labelEl.textContent = 'Unable to load availability';
+      }
+    })();
+
+    // Popup helpers
+    const slotsPopup = document.getElementById('slots-popup');
+    function showSlotsPopup(title, msg) {
+      document.getElementById('slots-popup-title').textContent = title;
+      document.getElementById('slots-popup-msg').textContent = msg;
+      slotsPopup.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeSlotsPopup() {
+      slotsPopup.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+    document.getElementById('slots-popup-ok').addEventListener('click', closeSlotsPopup);
+    document.getElementById('slots-popup-close').addEventListener('click', closeSlotsPopup);
+    slotsPopup.addEventListener('click', (e) => { if (e.target === slotsPopup) closeSlotsPopup(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSlotsPopup(); });
 
     // Build player slots
     const grid = document.getElementById('player-grid');
-
     function slotCount() { return grid.querySelectorAll('.player-slot').length; }
 
-    function createSlot(i, startOpen) {
+    function createSlot(i, startOpen, removable) {
       const num = String(i).padStart(2, '0');
       const details = document.createElement('details');
       details.className = 'player-slot';
@@ -229,7 +266,7 @@
           <span class="player-number">${num}</span>
           <span class="player-title">Player ${i}</span>
           <span class="player-summary"></span>
-          <span class="player-status label-text" style="color:var(--ember);margin-left:auto">Required</span>
+          <span class="player-status label-text" style="color:var(--ember);margin-left:auto">${i <= 6 ? 'Required' : 'Optional'}</span>
         </summary>
         <div class="player-fields">
           <div class="form-row">
@@ -242,6 +279,7 @@
           <div class="form-group"><label class="form-label">Emergency Contact Phone</label><input class="form-input" type="tel" data-player="emergency"></div>
           <div class="form-group"><label class="form-label">Relation to Player</label><input class="form-input" type="text" data-player="relation" placeholder="e.g. Parent, Sibling, Friend"></div>
           <button type="button" class="player-done">Done</button>
+          ${removable ? '<button type="button" class="player-remove" style="margin-left:0.5rem">Remove Player</button>' : ''}
         </div>
       `;
       return details;
@@ -249,7 +287,7 @@
 
     // Start with 6 required slots
     for (let i = 1; i <= 6; i++) {
-      grid.appendChild(createSlot(i, i === 1));
+      grid.appendChild(createSlot(i, i === 1, false));
     }
 
     // Add player button
@@ -261,39 +299,38 @@
 
     addBtn.addEventListener('click', () => {
       const next = slotCount() + 1;
-      const slot = createSlot(next, true);
-      const removeBtn = document.createElement('button');
-      removeBtn.type = 'button';
-      removeBtn.className = 'player-remove';
-      removeBtn.textContent = 'Remove Player';
-      slot.querySelector('.player-fields').appendChild(removeBtn);
+      const slot = createSlot(next, true, true);
       grid.appendChild(slot);
-      addBtn.style.display = slotCount() >= 10 ? 'none' : '';
+      addBtn.style.display = slotCount() >= 15 ? 'none' : '';
     });
 
     grid.addEventListener('click', (e) => {
       if (!e.target.classList.contains('player-remove')) return;
       const slot = e.target.closest('.player-slot');
       slot.remove();
-      addBtn.style.display = slotCount() >= 10 ? 'none' : '';
-      // Renumber all slots
+      addBtn.style.display = slotCount() >= 15 ? 'none' : '';
+      // Renumber
       grid.querySelectorAll('.player-slot').forEach((s, i) => {
         const num = String(i + 1).padStart(2, '0');
         s.querySelector('.player-number').textContent = num;
         const first = s.querySelector('[data-player="first"]').value.trim();
         const last = s.querySelector('[data-player="last"]').value.trim();
         if (!first && !last) s.querySelector('.player-title').textContent = 'Player ' + (i + 1);
+        const status = s.querySelector('.player-status');
+        if (status && status.textContent !== '') {
+          status.textContent = (i + 1) <= 6 ? 'Required' : 'Optional';
+          status.style.color = (i + 1) <= 6 ? 'var(--ember)' : 'var(--grey)';
+        }
       });
       updateCaptainDropdown();
     });
 
-    // Update captain dropdown options
+    // Captain dropdown
     const captainSelect = document.getElementById('reg-captain');
     function updateCaptainDropdown() {
       const current = captainSelect.value;
-      const slots = grid.querySelectorAll('.player-slot');
       captainSelect.innerHTML = '<option value="" disabled>Select a player</option>';
-      slots.forEach((s, i) => {
+      grid.querySelectorAll('.player-slot').forEach((s) => {
         const first = s.querySelector('[data-player="first"]').value.trim();
         const last = s.querySelector('[data-player="last"]').value.trim();
         if (first || last) {
@@ -308,7 +345,7 @@
       if (!captainSelect.value && current) captainSelect.value = '';
     }
 
-    // Live update summary as they type
+    // Live update as they type
     grid.addEventListener('input', (e) => {
       if (!e.target.dataset.player) return;
       const slot = e.target.closest('.player-slot');
@@ -323,12 +360,13 @@
       const emerName = slot.querySelector('[data-player="emer_name"]').value.trim();
       const emergency = slot.querySelector('[data-player="emergency"]').value.trim();
       const relation = slot.querySelector('[data-player="relation"]').value.trim();
-      const fullName = [first, last].filter(Boolean).join(' ');
-      title.textContent = fullName || 'Player ' + parseInt(num);
+
+      title.textContent = [first, last].filter(Boolean).join(' ') || 'Player ' + parseInt(num);
       const parts = [];
       if (age) parts.push('Age ' + age);
       if (phone) parts.push(phone);
       summary.textContent = parts.join('  ·  ');
+
       if (first && last && age && phone && emerName && emergency && relation) {
         status.textContent = '';
       } else {
@@ -339,7 +377,7 @@
       updateCaptainDropdown();
     });
 
-    // Done button & edit logic
+    // Done button
     grid.addEventListener('click', (e) => {
       if (!e.target.classList.contains('player-done')) return;
       const slot = e.target.closest('.player-slot');
@@ -350,143 +388,13 @@
       const emerName = slot.querySelector('[data-player="emer_name"]').value.trim();
       const emergency = slot.querySelector('[data-player="emergency"]').value.trim();
       const relation = slot.querySelector('[data-player="relation"]').value.trim();
-      const title = slot.querySelector('.player-title');
-      const summary = slot.querySelector('.player-summary');
-      const status = slot.querySelector('.player-status');
 
       if (first && last && age && phone && emerName && emergency && relation) {
-        title.textContent = first + ' ' + last;
-        summary.textContent = 'Age ' + age + '  ·  ' + phone;
-        status.textContent = '';
+        slot.querySelector('.player-title').textContent = first + ' ' + last;
+        slot.querySelector('.player-summary').textContent = 'Age ' + age + '  ·  ' + phone;
+        slot.querySelector('.player-status').textContent = '';
         slot.classList.add('player-filled');
         slot.open = false;
-      }
-    });
-
-
-
-  </script>
-  <div class="slots-popup-overlay" id="slots-popup">
-    <div class="slots-popup">
-      <button class="slots-popup-close" id="slots-popup-close">&times;</button>
-      <div class="slots-popup-icon">&#128308;</div>
-      <h3 id="slots-popup-title">Registrations Full</h3>
-      <p id="slots-popup-msg">Sorry, all open slots have been filled. The remaining spots are reserved for SA teams.</p>
-      <button class="slots-popup-btn" id="slots-popup-ok">Got it</button>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
-  <script>
-    const sb = window.supabase.createClient(
-      'https://tsxfidulfdmmkaavtgwr.supabase.co',
-      'sb_publishable_i2ffIbcqV5jv8uEd6sdFHw_kNcB2Ege'
-    );
-
-    // Fetch team slots
-    const MAX_TEAMS = 8;
-    const SA_RESERVED = 4; // Slots reserved for SA teams (2 already registered, 2 remaining)
-    const OPEN_SLOTS = MAX_TEAMS - SA_RESERVED; // 6 open to anyone
-    let slotsData = null;
-
-    (async () => {
-      const numEl = document.getElementById('slots-number');
-      const barSaEl = document.getElementById('slots-bar-sa');
-      const barOpenEl = document.getElementById('slots-bar-open');
-      const saLabelEl = document.getElementById('slots-sa-label');
-      const openLabelEl = document.getElementById('slots-open-label');
-      const labelEl = document.getElementById('slots-label');
-      try {
-        const res = await fetch('/api/slots');
-        if (!res.ok) throw new Error();
-        slotsData = await res.json();
-        const { count, saCount } = slotsData;
-        const interstateCount = count - saCount;
-        const saReservedUsed = Math.min(saCount, SA_RESERVED);
-        const saInOpen = Math.max(0, saCount - SA_RESERVED);
-        const openUsed = interstateCount + saInOpen;
-        const openRemaining = Math.max(0, OPEN_SLOTS - openUsed);
-        const reservedRemaining = Math.max(0, SA_RESERVED - saReservedUsed);
-        const totalRemaining = openRemaining + reservedRemaining;
-
-        numEl.textContent = totalRemaining;
-        barSaEl.style.width = ((saReservedUsed / MAX_TEAMS) * 100) + '%';
-        barOpenEl.style.width = ((openUsed / MAX_TEAMS) * 100) + '%';
-
-        saLabelEl.textContent = 'SA: ' + saReservedUsed + '/' + SA_RESERVED + ' filled';
-        openLabelEl.textContent = 'Open: ' + openUsed + '/' + OPEN_SLOTS + ' filled';
-
-        if (count >= MAX_TEAMS) {
-          numEl.style.color = 'var(--grey)';
-          labelEl.textContent = 'All slots filled — registrations closed';
-          labelEl.style.color = 'var(--ember)';
-          barSaEl.style.background = 'var(--grey)';
-          barOpenEl.style.background = 'var(--grey)';
-          document.getElementById('reg-form').style.display = 'none';
-        } else if (openRemaining === 0 && reservedRemaining > 0) {
-          labelEl.textContent = reservedRemaining + ' SA slot' + (reservedRemaining > 1 ? 's' : '') + ' remaining';
-          labelEl.style.color = 'var(--ember)';
-        } else if (totalRemaining <= 2) {
-          labelEl.textContent = 'Almost full — register now';
-          labelEl.style.color = 'var(--ember)';
-        } else {
-          labelEl.textContent = count + ' of ' + MAX_TEAMS + ' slots taken';
-        }
-      } catch (e) {
-        numEl.textContent = '?';
-        labelEl.textContent = 'Unable to load availability';
-      }
-    })();
-
-    // Popup helpers
-    const slotsPopup = document.getElementById('slots-popup');
-    const slotsPopupTitle = document.getElementById('slots-popup-title');
-    const slotsPopupMsg = document.getElementById('slots-popup-msg');
-
-    function showSlotsPopup(title, msg) {
-      slotsPopupTitle.textContent = title;
-      slotsPopupMsg.textContent = msg;
-      slotsPopup.classList.add('active');
-      document.body.style.overflow = 'hidden';
-    }
-    function closeSlotsPopup() {
-      slotsPopup.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-    document.getElementById('slots-popup-ok').addEventListener('click', closeSlotsPopup);
-    document.getElementById('slots-popup-close').addEventListener('click', closeSlotsPopup);
-    slotsPopup.addEventListener('click', (e) => { if (e.target === slotsPopup) closeSlotsPopup(); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSlotsPopup(); });
-
-    // When open slots are full, show popup for interstate — allow SA
-    const regStateSelect = document.getElementById('reg-state');
-    regStateSelect.addEventListener('change', () => {
-      if (!slotsData) return;
-      const { count, saCount } = slotsData;
-      const interstateCount = count - saCount;
-      const saInOpen = Math.max(0, saCount - SA_RESERVED);
-      const openUsed = interstateCount + saInOpen;
-      const openFull = openUsed >= OPEN_SLOTS;
-      const reservedRemaining = Math.max(0, SA_RESERVED - Math.min(saCount, SA_RESERVED));
-      const selectedState = regStateSelect.value;
-
-      const submitBtn = document.getElementById('reg-submit');
-      const errorEl = document.getElementById('reg-error');
-
-      if (count >= MAX_TEAMS) {
-        submitBtn.disabled = true;
-      } else if (selectedState === 'SA' && reservedRemaining === 0) {
-        submitBtn.disabled = true;
-        errorEl.style.display = 'none';
-        showSlotsPopup('SA Slots Full', 'All SA reserved slots have been filled.');
-      } else if (selectedState !== 'SA' && openFull) {
-        submitBtn.disabled = true;
-        errorEl.style.display = 'none';
-        showSlotsPopup('Open Slots Full', 'Sorry, all open registration slots have been filled. The remaining spots are reserved for SA teams only.');
-      } else {
-        submitBtn.disabled = false;
-        errorEl.style.display = 'none';
       }
     });
 
@@ -508,7 +416,12 @@
       const errorEl = document.getElementById('reg-error');
       errorEl.style.display = 'none';
 
-      // Validate contact info
+      // Check slots are still available
+      if (slotsData && slotsData.count >= MAX_TEAMS) {
+        showSlotsPopup('Registrations Full', 'Sorry, all girls registration slots have been filled.');
+        return;
+      }
+
       const firstName = document.getElementById('reg-first').value.trim();
       const lastName = document.getElementById('reg-last').value.trim();
       const email = document.getElementById('reg-email').value.trim();
@@ -524,7 +437,6 @@
       if (!state) return showError('Please select your state.');
       if (!document.getElementById('reg-team').value.trim()) return showError('Please enter your team name.');
 
-      // Validate players
       const slots = document.querySelectorAll('.player-slot');
       const players = [];
       let slotNum = 0;
@@ -538,15 +450,12 @@
         const emergency = slot.querySelector('[data-player="emergency"]').value.trim();
         const relation = slot.querySelector('[data-player="relation"]').value.trim();
 
-        const hasAll = first && last && age && phone && emerName && emergency && relation;
-
-        if (!hasAll) return showError('Player ' + slotNum + ': Please fill in all fields.');
-
+        if (!first || !last || !age || !phone || !emerName || !emergency || !relation) {
+          return showError('Player ' + slotNum + ': Please fill in all fields.');
+        }
         if (!nameRegex.test(first) || !nameRegex.test(last)) return showError('Player ' + slotNum + ': Names must be at least 2 characters and contain only letters.');
-
         const ageNum = parseInt(age);
         if (isNaN(ageNum) || ageNum < 5 || ageNum > 99) return showError('Player ' + slotNum + ': Age must be between 5 and 99.');
-
         if (!phoneRegex.test(phone)) return showError('Player ' + slotNum + ': Please enter a valid phone number.');
         if (!nameRegex.test(emerName)) return showError('Player ' + slotNum + ': Emergency contact name must be at least 2 characters.');
         if (!phoneRegex.test(emergency)) return showError('Player ' + slotNum + ': Please enter a valid emergency phone number.');
@@ -556,24 +465,17 @@
       }
 
       if (players.length < 6) return showError('You need at least 6 players to register.');
+      if (players.length > 15) return showError('Maximum 15 players allowed.');
       if (!captain) return showError('Please select a team captain.');
 
       const teamName = document.getElementById('reg-team').value.trim();
-      const refParts = ['FNF2026'];
-      const refParish = parish.toUpperCase().replace(/[^A-Z0-9]/g, '');
-      const refTeam = teamName.toUpperCase().replace(/[^A-Z0-9]/g, '');
-      if (refParish) refParts.push(refParish);
-      if (refTeam) refParts.push(refTeam);
-      refParts.push(Date.now().toString(36).toUpperCase().slice(-5));
-      const paymentRef = refParts.join('_');
 
-      // Show loading
       document.getElementById('reg-form').style.display = 'none';
       document.getElementById('reg-loading').style.display = 'block';
 
       let regResult;
       try {
-        const resp = await fetch('/api/register', {
+        const resp = await fetch('/api/register-girls', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -584,8 +486,7 @@
             state,
             team_name: teamName,
             players,
-            captain,
-            payment_ref: paymentRef
+            captain
           })
         });
         regResult = await resp.json();
@@ -595,15 +496,11 @@
         document.getElementById('reg-form').style.display = '';
         errorEl.textContent = err.message || 'Something went wrong. Please try again.';
         errorEl.style.display = 'block';
-        console.error(err);
         return;
       }
 
       document.getElementById('reg-loading').style.display = 'none';
-
-      // Store data for PDF
-      window._regData = { firstName, lastName, email, parish, state, teamName: teamName || '—', players, captain, paymentRef };
-
+      window._regData = { firstName, lastName, email, parish, state, teamName: teamName || '—', players, captain };
       document.getElementById('reg-success').style.display = 'block';
     });
 
@@ -620,7 +517,6 @@
       function addLine(yy) { doc.setDrawColor(200, 80, 40); doc.setLineWidth(0.3); doc.line(14, yy, pw - 14, yy); }
       function checkPage(needed) { if (y + needed > 275) { doc.addPage(); y = 20; } }
 
-      // Header
       doc.setFontSize(22);
       doc.setFont('helvetica', 'bold');
       doc.text('Faith & Fire Invitational', pw / 2, y, { align: 'center' });
@@ -628,12 +524,11 @@
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(120);
-      doc.text('Registration Confirmation  ·  26 September 2026', pw / 2, y, { align: 'center' });
+      doc.text('Girls Registration Confirmation  ·  26 September 2026', pw / 2, y, { align: 'center' });
       doc.setTextColor(0);
       y += 8;
       addLine(y); y += 10;
 
-      // Contact details
       doc.setFontSize(13);
       doc.setFont('helvetica', 'bold');
       doc.text('Contact Details', 14, y); y += 8;
@@ -657,7 +552,6 @@
       y += 4;
       addLine(y); y += 10;
 
-      // Players
       doc.setFontSize(13);
       doc.setFont('helvetica', 'bold');
       doc.text('Players (' + d.players.length + ')', 14, y); y += 8;
@@ -679,28 +573,14 @@
       y += 2;
       addLine(y); y += 10;
 
-      // Payment
-      checkPage(20);
-      doc.setFontSize(13);
-      doc.setFont('helvetica', 'bold');
-      doc.text('Payment', 14, y); y += 8;
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
-      const amt = d.state === 'SA' ? '$225.00' : '$175.00';
-      doc.text('Registration Fee: ' + amt + ' per team', 14, y); y += 6;
-      doc.text('Payment details will be sent to you via email.', 14, y); y += 10;
-      addLine(y); y += 10;
-
-      // Footer
       checkPage(20);
       doc.setFontSize(8);
       doc.setTextColor(120);
       doc.text('Generated on ' + new Date().toLocaleDateString('en-AU') + '  ·  Faith & Fire Invitational  ·  SMYM Adelaide South', pw / 2, y, { align: 'center' });
 
-      const fileName = 'FNF2026_' + d.parish.toUpperCase().replace(/[^A-Z0-9]/g, '') + '_Registration.pdf';
+      const fileName = 'FNF2026_Girls_' + d.parish.toUpperCase().replace(/[^A-Z0-9]/g, '') + '_Registration.pdf';
       doc.save(fileName);
     });
   </script>
-
 </body>
 </html>

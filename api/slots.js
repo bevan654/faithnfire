@@ -12,5 +12,5 @@ module.exports = async function handler(req, res) {
   const { count: saCount, error: saError } = await sb.from('registrations').select('*', { count: 'exact', head: true }).eq('state', 'SA');
   if (saError) return res.status(500).json({ error: saError.message });
 
-  return res.status(200).json({ count, saCount });
+  return res.status(200).json({ count: count ?? 0, saCount: saCount ?? 0 });
 };

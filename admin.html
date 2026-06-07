@@ -215,6 +215,7 @@
 
   <div class="admin-tabs">
     <button class="admin-tab active" data-tab="registrations">Registrations</button>
+    <button class="admin-tab" data-tab="girls">Girls</button>
     <button class="admin-tab" data-tab="audit-log">Audit Log</button>
   </div>
 
@@ -245,6 +246,32 @@
     </table>
   </div>
 
+  <div class="tab-content" id="tab-girls">
+    <h1>Girls Registrations</h1>
+    <div class="stats" id="girls-stats"></div>
+    <div class="search-box">
+      <input type="text" id="girls-search" placeholder="Search by name, parish, team, email...">
+    </div>
+    <p id="girls-loading">Loading...</p>
+    <table id="girls-table" style="display:none">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Parish</th>
+          <th>State</th>
+          <th>Team</th>
+          <th>Captain</th>
+          <th>Players</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="girls-body"></tbody>
+    </table>
+  </div>
+
   <div class="tab-content" id="tab-audit-log">
     <h1>Audit Log</h1>
     <p id="log-loading" style="color:#666">Loading...</p>
@@ -260,6 +287,7 @@
       </div>
       <div class="edit-modal-body">
         <input type="hidden" id="edit-id">
+        <input type="hidden" id="edit-type">
 
         <div class="edit-section-label">Contact Details</div>
         <div class="edit-row">
@@ -288,7 +316,7 @@
           <div class="edit-field"><label>Team Name</label><input type="text" id="edit-team"></div>
           <div class="edit-field"><label>Captain</label><input type="text" id="edit-captain"></div>
         </div>
-        <div class="edit-field"><label>Payment Reference</label><input type="text" id="edit-payref"></div>
+        <div class="edit-field" id="edit-payref-row"><label>Payment Reference</label><input type="text" id="edit-payref"></div>
 
         <div class="edit-section-label" style="margin-top:1.5rem">
           Players
@@ -436,7 +464,7 @@
     if (e.target.classList.contains('edit-btn')) {
       const regId = e.target.dataset.regId;
       const reg = allRows.find(r => String(r.id) === regId);
-      if (reg) openEditModal(reg);
+      if (reg) openEditModal(reg, 'regular');
     }
   });
 
@@ -459,8 +487,10 @@
   }
 
   // --- Edit Modal ---
-  function openEditModal(reg) {
+  function openEditModal(reg, type) {
     document.getElementById('edit-id').value = reg.id;
+    document.getElementById('edit-type').value = type || 'regular';
+    document.getElementById('edit-payref-row').style.display = type === 'girls' ? 'none' : '';
     document.getElementById('edit-first').value = reg.first_name || '';
     document.getElementById('edit-last').value = reg.last_name || '';
     document.getElementById('edit-email').value = reg.email || '';
@@ -564,6 +594,7 @@
     errorEl.style.display = 'none';
 
     const id = document.getElementById('edit-id').value;
+    const editType = document.getElementById('edit-type').value;
     const first_name = document.getElementById('edit-first').value.trim();
     const last_name = document.getElementById('edit-last').value.trim();
     const email = document.getElementById('edit-email').value.trim();
@@ -604,13 +635,17 @@
     saveBtn.textContent = 'Saving...';
 
     try {
-      const res = await fetch('/api/update-registration', {
+      const endpoint = editType === 'girls' ? '/api/update-registration-girls' : '/api/update-registration';
+      const payload = editType === 'girls'
+        ? { id, first_name, last_name, email, parish, state, team_name, captain, players }
+        : { id, first_name, last_name, email, parish, state, team_name, captain, payment_ref, players };
+      const res = await fetch(endpoint, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': authHeader
         },
-        body: JSON.stringify({ id, first_name, last_name, email, parish, state, team_name, captain, payment_ref, players })
+        body: JSON.stringify(payload)
       });
 
       if (!res.ok) {
@@ -620,7 +655,11 @@
 
       closeEditModal();
       showToast('Registration updated successfully.', 'success');
-      await loadData();
+      if (editType === 'girls') {
+        await loadGirlsData();
+      } else {
+        await loadData();
+      }
     } catch (e) {
       showEditError(e.message);
     } finally {
@@ -644,7 +683,102 @@
       tab.classList.add('active');
       document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
       if (tab.dataset.tab === 'audit-log') loadAuditLog();
+      if (tab.dataset.tab === 'girls') loadGirlsData();
     });
+  });
+
+  // --- Girls Registrations ---
+  let allGirlsRows = [];
+
+  async function loadGirlsData() {
+    const loadingEl = document.getElementById('girls-loading');
+    loadingEl.style.display = 'block';
+    loadingEl.textContent = 'Loading...';
+    try {
+      const res = await fetch('/api/registrations-girls', {
+        headers: { 'Authorization': authHeader }
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || 'Request failed');
+      }
+      const data = await res.json();
+      loadingEl.style.display = 'none';
+      allGirlsRows = data || [];
+      document.getElementById('girls-stats').innerHTML =
+        'Total registrations: <span>' + allGirlsRows.length + '</span> &middot; Total players: <span>' +
+        allGirlsRows.reduce((s, r) => s + (r.players ? r.players.length : 0), 0) + '</span>';
+      renderGirlsTable(allGirlsRows);
+    } catch (e) {
+      loadingEl.textContent = 'Error: ' + e.message;
+    }
+  }
+
+  function renderGirlsTable(rows) {
+    const table = document.getElementById('girls-table');
+    const body = document.getElementById('girls-body');
+    body.innerHTML = '';
+
+    if (rows.length === 0) {
+      body.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#555;padding:2rem">No registrations found</td></tr>';
+      table.style.display = 'table';
+      return;
+    }
+
+    rows.forEach((r, i) => {
+      const tr = document.createElement('tr');
+      const players = r.players || [];
+      const date = r.created_at ? new Date(r.created_at).toLocaleDateString('en-AU') : '—';
+
+      tr.innerHTML =
+        '<td>' + (i + 1) + '</td>' +
+        '<td>' + esc(r.first_name) + ' ' + esc(r.last_name) + '</td>' +
+        '<td>' + esc(r.email) + '</td>' +
+        '<td>' + esc(r.parish) + '</td>' +
+        '<td>' + esc(r.state || '—') + '</td>' +
+        '<td>' + esc(r.team_name || '—') + '</td>' +
+        '<td>' + esc(r.captain || '—') + '</td>' +
+        '<td><button class="expand-btn" data-girls-idx="' + i + '">' + players.length + ' players</button></td>' +
+        '<td class="time">' + date + '</td>' +
+        '<td><button class="edit-btn" data-reg-id="' + esc(r.id) + '" data-reg-type="girls">Edit</button></td>';
+      body.appendChild(tr);
+
+      const detailTr = document.createElement('tr');
+      detailTr.id = 'girls-detail-' + i;
+      detailTr.style.display = 'none';
+      const detailTd = document.createElement('td');
+      detailTd.colSpan = 10;
+      detailTd.innerHTML = players.map((p, j) =>
+        '<div class="player-detail"><strong>Player ' + (j + 1) + ':</strong> ' + esc(p.first_name) + ' ' + esc(p.last_name) + ' &middot; Age ' + p.age + ' &middot; ' + esc(p.phone) + '<br>Emergency: ' + esc(p.emergency_name) + ' (' + esc(p.relation) + ') — ' + esc(p.emergency_phone) + '</div>'
+      ).join('');
+      detailTr.appendChild(detailTd);
+      body.appendChild(detailTr);
+    });
+
+    table.style.display = 'table';
+  }
+
+  document.getElementById('girls-body').addEventListener('click', (e) => {
+    if (e.target.classList.contains('expand-btn')) {
+      const idx = e.target.dataset.girlsIdx;
+      if (idx === undefined) return;
+      const row = document.getElementById('girls-detail-' + idx);
+      row.style.display = row.style.display === 'none' ? '' : 'none';
+    }
+    if (e.target.classList.contains('edit-btn')) {
+      const regId = e.target.dataset.regId;
+      const reg = allGirlsRows.find(r => String(r.id) === regId);
+      if (reg) openEditModal(reg, 'girls');
+    }
+  });
+
+  document.getElementById('girls-search').addEventListener('input', (e) => {
+    const q = e.target.value.toLowerCase();
+    if (!q) return renderGirlsTable(allGirlsRows);
+    renderGirlsTable(allGirlsRows.filter(r =>
+      [r.first_name, r.last_name, r.email, r.parish, r.team_name, r.captain, r.state]
+        .filter(Boolean).join(' ').toLowerCase().includes(q)
+    ));
   });
 
   // --- Audit Log ---
