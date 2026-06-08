@@ -301,14 +301,14 @@
       const next = slotCount() + 1;
       const slot = createSlot(next, true, true);
       grid.appendChild(slot);
-      addBtn.style.display = slotCount() >= 15 ? 'none' : '';
+      addBtn.style.display = slotCount() >= 12 ? 'none' : '';
     });
 
     grid.addEventListener('click', (e) => {
       if (!e.target.classList.contains('player-remove')) return;
       const slot = e.target.closest('.player-slot');
       slot.remove();
-      addBtn.style.display = slotCount() >= 15 ? 'none' : '';
+      addBtn.style.display = slotCount() >= 12 ? 'none' : '';
       // Renumber
       grid.querySelectorAll('.player-slot').forEach((s, i) => {
         const num = String(i + 1).padStart(2, '0');
