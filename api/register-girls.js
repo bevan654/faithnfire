@@ -20,8 +20,8 @@ module.exports = async function handler(req, res) {
   if (!Array.isArray(players) || players.length < 6) {
     return res.status(400).json({ error: 'At least 6 players required' });
   }
-  if (players.length > 15) {
-    return res.status(400).json({ error: 'Maximum 15 players allowed' });
+  if (players.length > 12) {
+    return res.status(400).json({ error: 'Maximum 12 players allowed' });
   }
 
   for (let i = 0; i < players.length; i++) {

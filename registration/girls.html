@@ -145,7 +145,7 @@
         </div>
 
         <div class="page-divider" style="margin:2.5rem 0"></div>
-        <p class="label-text" style="margin-bottom:1.5rem">Players — minimum 6, maximum 15</p>
+        <p class="label-text" style="margin-bottom:1.5rem">Players — minimum 6, maximum 12</p>
 
         <div class="player-grid" id="player-grid"></div>
 
@@ -465,7 +465,7 @@
       }
 
       if (players.length < 6) return showError('You need at least 6 players to register.');
-      if (players.length > 15) return showError('Maximum 15 players allowed.');
+      if (players.length > 12) return showError('Maximum 12 players allowed.');
       if (!captain) return showError('Please select a team captain.');
 
       const teamName = document.getElementById('reg-team').value.trim();
