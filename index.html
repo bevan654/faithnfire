@@ -314,6 +314,26 @@
     transform: scaleX(1);
     transform-origin: left;
   }
+  .cta-row {
+    margin-top: 2.5rem;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .cta-row .register-btn {
+    margin-top: 0;
+  }
+  .book-btn {
+    color: var(--black);
+    background: var(--ember);
+  }
+  .book-btn::before {
+    background: var(--flame-orange);
+  }
+  .book-btn:hover {
+    color: var(--black);
+  }
 
   /* Small flame icon */
   .flame {
@@ -408,7 +428,10 @@
           <span>Adelaide, SA</span>
         </div>
 
-        <a href="/registration" class="register-btn">Register Now</a>
+        <div class="cta-row">
+          <a href="/tickets" class="register-btn book-btn">Book Tickets</a>
+          <a href="/registration" class="register-btn">Register Now</a>
+        </div>
       </div>
     </main>
 

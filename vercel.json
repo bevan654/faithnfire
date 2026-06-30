@@ -1,5 +1,12 @@
 {
   "buildCommand": "",
   "outputDirectory": ".",
-  "cleanUrls": true
+  "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/tickets",
+      "destination": "https://www.trybooking.com/events/landing/1609316",
+      "permanent": false
+    }
+  ]
 }
