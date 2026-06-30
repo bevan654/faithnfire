@@ -4,7 +4,7 @@
   "cleanUrls": true,
   "redirects": [
     {
-      "source": "/tickets",
+      "source": "/book",
       "destination": "https://www.trybooking.com/events/landing/1609316",
       "permanent": false
     }
