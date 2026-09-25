@@ -391,7 +391,7 @@
   }
 
   @media (max-width: 420px) {
-    .countdown { padding: 1.1rem 1.25rem; }
+    .countdown { padding: 0.7rem 1rem; }
     .countdown-live { grid-template-columns: 30px minmax(0, 1fr) 30px; column-gap: 0.5rem; }
     .live-now { font-size: 1.9rem; }
   }
@@ -424,8 +424,22 @@
   }
 
   @media (max-width: 640px) {
-    .details { flex-direction: column; gap: 0.8rem; }
+    .main { padding: 1rem; }
+    .title-main { font-size: clamp(3rem, 14vw, 4.5rem); }
+    .subtitle { margin-top: 0.65rem; }
+    .divider { margin: 0.8rem auto; }
+    .countdown { padding: 0.75rem 1.2rem; }
+    .details {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 0.35rem 0.9rem;
+      margin-top: 1rem;
+      font-size: 0.52rem;
+      letter-spacing: 0.1em;
+    }
     .details span:not(:last-child)::after { display: none; }
+    .cta-row { margin-top: 1rem; }
+    .register-btn { padding: 0.72rem 2rem; }
     .volleyball-lines { width: 200px; height: 200px; }
   }
 
@@ -675,17 +689,33 @@
   }
 
   @media (max-width: 420px) {
-    .sponsors { width: calc(100vw - 2.5rem); margin-top: 1.6rem; }
-    .sponsor-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
+    .sponsors { width: calc(100vw - 1.5rem); margin-top: 0.75rem; }
+    .sponsor-grid {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 0.3rem;
+      margin-top: 0.4rem;
+    }
+    .sponsor-slot { grid-column: span 2; gap: 0.25rem; padding: 0.25rem; }
     .sponsor-slot--platinum { grid-column: 1 / -1; }
-    .sponsor-media { height: 72px; }
+    .sponsor-slot:nth-child(5) { grid-column: 2 / span 2; }
+    .sponsor-slot:nth-child(6) { grid-column: 4 / span 2; }
+    .sponsor-media { height: 46px; }
     .sponsor-slot--platinum .sponsor-media {
-      width: min(280px, 94%);
+      width: min(210px, 76%);
       height: auto;
     }
-    .sponsor-meta { gap: 0.3rem; }
-    .sponsor-link { padding: 0.22rem 0.32rem; font-size: 0.38rem; letter-spacing: 0.06em; }
-    .sponsor-tier { font-size: 0.4rem; letter-spacing: 0.15em; }
+    .sponsor-meta { min-height: 1rem; gap: 0.2rem; }
+    .sponsor-link {
+      width: 1rem;
+      height: 1rem;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      font-size: 0;
+    }
+    .sponsor-link::after { content: '\2197'; font-size: 0.56rem; }
+    .sponsor-tier { font-size: 0.34rem; letter-spacing: 0.08em; }
+    .sponsor-tier::before { display: none; }
   }
 
   /* Small flame icon */
@@ -963,17 +993,56 @@
   }
 
   @media (max-width: 480px) {
-    .redirect-panel { padding: 1.35rem 1rem; }
-    .redirect-sponsors { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .redirect-panel {
+      width: calc(100vw - 1.25rem);
+      padding: 0.9rem 0.75rem;
+    }
+    .redirect-title { margin-top: 0.35rem; font-size: 1.15rem; }
+    .redirect-copy { margin-top: 0.45rem; font-size: 0.72rem; line-height: 1.4; }
+    .redirect-destination {
+      gap: 0.4rem;
+      margin-top: 0.65rem;
+      padding: 0.55rem 0.6rem;
+      font-size: 0.44rem;
+      letter-spacing: 0.1em;
+    }
+    .redirect-progress { margin: 0.55rem 0 0.8rem; }
+    .redirect-sponsor-note { font-size: 0.46rem; }
+    .redirect-sponsors {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.3rem;
+      margin-top: 0.45rem;
+    }
     .redirect-sponsor,
     .redirect-sponsor:nth-child(5),
-    .redirect-sponsor:nth-child(6) { grid-column: auto; }
+    .redirect-sponsor:nth-child(6) {
+      grid-column: auto;
+      gap: 0.25rem;
+      padding: 0.3rem;
+    }
+    .redirect-sponsor:nth-child(6) {
+      grid-column: 1 / -1;
+      width: calc(50% - 0.15rem);
+      justify-self: center;
+    }
     .redirect-sponsor--platinum {
       grid-column: 1 / -1;
-      gap: 0.7rem;
+      width: auto;
+      gap: 0.3rem;
     }
-    .redirect-sponsor--platinum .redirect-sponsor-logo { width: 120px; }
-    .redirect-actions { flex-direction: column-reverse; align-items: stretch; gap: 0.7rem; }
+    .redirect-sponsor-logo { height: 42px; padding: 0.2rem; }
+    .redirect-sponsor--platinum .redirect-sponsor-logo { width: 110px; }
+    .redirect-sponsor-name { font-size: 0.55rem; line-height: 1.15; }
+    .redirect-sponsor-tier { margin-top: 0.15rem; font-size: 0.34rem; }
+    .redirect-actions {
+      flex-direction: row;
+      align-items: center;
+      gap: 0.65rem;
+      margin-top: 0.75rem;
+      padding-top: 0.7rem;
+    }
+    .redirect-continue { padding: 0.65rem 0.75rem; }
+    .redirect-stay { padding: 0.65rem 0; }
     .redirect-continue,
     .redirect-stay { text-align: center; }
   }
