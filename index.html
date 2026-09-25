@@ -8,6 +8,35 @@
 <link rel="stylesheet" href="styles.css">
 <link rel="stylesheet" href="nav.css">
 <style>
+  html,
+  body.home {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  .home .page {
+    height: 100svh;
+    min-height: 100svh;
+    overflow: hidden;
+  }
+
+  .home .site-nav,
+  .home .bottom-bar {
+    flex: 0 0 auto;
+  }
+
+  .home .main {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .home .title-group {
+    transform-origin: center center;
+    will-change: transform;
+  }
+
   /* Home page: elements start hidden for GSAP reveal */
   .home .site-nav,
   .home .bottom-bar,
@@ -246,6 +275,131 @@
     margin-bottom: 0.9rem;
   }
 
+  .countdown.is-live {
+    border-color: rgba(255,106,0,0.48);
+    background:
+      radial-gradient(circle at 50% 130%, rgba(255,106,0,0.22), transparent 68%),
+      rgba(9,9,9,0.72);
+    box-shadow: 0 0 36px rgba(255,72,0,0.12), inset 0 0 24px rgba(255,106,0,0.04);
+  }
+
+  .countdown.is-live::before,
+  .countdown.is-live::after {
+    border-color: var(--flame-orange);
+    box-shadow: 0 0 8px rgba(255,106,0,0.65);
+  }
+
+  .countdown-live {
+    width: 100%;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) 36px;
+    grid-template-areas: ". copy arrow";
+    align-items: center;
+    column-gap: 0.75rem;
+    text-align: center;
+    color: var(--white);
+    text-decoration: none;
+  }
+
+  .countdown-live[hidden],
+  .countdown-timer[hidden] {
+    display: none;
+  }
+
+  .live-copy {
+    grid-area: copy;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.34rem;
+  }
+
+  .live-label {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 0.55rem;
+    line-height: 1;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--grey);
+  }
+
+  .live-now {
+    font-family: 'Inter', sans-serif;
+    font-weight: 900;
+    font-size: clamp(2rem, 4vw, 2.7rem);
+    line-height: 0.8;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--white);
+    text-shadow:
+      0 0 8px rgba(255,149,0,0.95),
+      0 0 24px rgba(255,106,0,0.65),
+      0 0 44px rgba(255,72,0,0.35);
+    animation: now-glow 1.8s ease-in-out infinite alternate;
+  }
+
+  .live-action {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 0.56rem;
+    line-height: 1;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--flame-orange);
+  }
+
+  .live-arrow {
+    grid-area: arrow;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(255,149,0,0.55);
+    color: var(--flame-orange);
+    font-size: 1.25rem;
+    transition: transform 0.25s ease, color 0.25s ease, background 0.25s ease;
+  }
+
+  .countdown-live:hover .live-arrow,
+  .countdown-live:focus-visible .live-arrow {
+    transform: translateX(4px);
+    color: var(--black);
+    background: var(--flame-orange);
+  }
+
+  .countdown-live:focus-visible {
+    outline: 2px solid var(--flame-orange);
+    outline-offset: 8px;
+  }
+
+  @keyframes now-glow {
+    from {
+      text-shadow:
+        0 0 6px rgba(255,149,0,0.75),
+        0 0 18px rgba(255,106,0,0.45),
+        0 0 34px rgba(255,72,0,0.25);
+    }
+    to {
+      text-shadow:
+        0 0 10px rgba(255,179,71,1),
+        0 0 28px rgba(255,106,0,0.8),
+        0 0 52px rgba(255,72,0,0.45);
+    }
+  }
+
+  @media (max-width: 420px) {
+    .countdown { padding: 1.1rem 1.25rem; }
+    .countdown-live { grid-template-columns: 30px minmax(0, 1fr) 30px; column-gap: 0.5rem; }
+    .live-now { font-size: 1.9rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .live-now { animation: none; }
+  }
+
   /* Event details */
   .details {
     display: flex;
@@ -335,6 +489,205 @@
     color: var(--black);
   }
 
+  /* Sponsor strip */
+  .sponsors {
+    width: min(560px, calc(100vw - 4rem));
+    margin: 2rem auto 0;
+    opacity: 0;
+  }
+
+  .sponsors-heading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.5rem;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--grey);
+  }
+
+  .sponsors-heading::before,
+  .sponsors-heading::after {
+    content: '';
+    width: 42px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(245,245,240,0.2));
+  }
+
+  .sponsors-heading::after {
+    transform: scaleX(-1);
+  }
+
+  .sponsor-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.65rem;
+    margin-top: 0.85rem;
+  }
+
+  .sponsor-slot {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    padding: 0.55rem;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(245,245,240,0.09);
+    background: rgba(245,245,240,0.018);
+    transition: border-color 0.3s ease, background 0.3s ease, transform 0.3s ease;
+  }
+
+  .sponsor-slot--platinum {
+    grid-column: 1 / -1;
+    padding: 0.65rem;
+    border-color: rgba(220,226,232,0.18);
+  }
+
+  .sponsor-slot--silver { border-color: rgba(183,187,194,0.14); }
+  .sponsor-slot--bronze { border-color: rgba(197,125,72,0.18); }
+  .sponsor-slot--wide { grid-column: span 2; }
+
+  .sponsor-slot::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent 25%, rgba(255,149,0,0.07), transparent 75%);
+    transform: translateX(-110%);
+    transition: transform 0.65s ease;
+  }
+
+  .sponsor-slot:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255,149,0,0.3);
+    background: rgba(255,106,0,0.025);
+  }
+
+  .sponsor-slot:hover::before {
+    transform: translateX(110%);
+  }
+
+  .sponsor-tier {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 0.46rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    text-align: left;
+  }
+
+  .sponsor-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    min-height: 1.3rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  .sponsor-link {
+    flex: 0 0 auto;
+    padding: 0.24rem 0.42rem;
+    border: 1px solid rgba(245,245,240,0.16);
+    font-family: 'Inter', sans-serif;
+    font-weight: 650;
+    font-size: 0.42rem;
+    letter-spacing: 0.1em;
+    line-height: 1;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+    color: rgba(245,245,240,0.72);
+    background: rgba(245,245,240,0.035);
+    transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  }
+
+  .sponsor-link:hover,
+  .sponsor-link:focus-visible {
+    color: var(--black);
+    border-color: var(--flame-orange);
+    background: var(--flame-orange);
+  }
+
+  .sponsor-link:focus-visible {
+    outline: 2px solid var(--white);
+    outline-offset: 2px;
+  }
+
+  .sponsor-tier::before {
+    content: '';
+    display: inline-block;
+    width: 14px;
+    height: 1px;
+    margin-right: 0.45rem;
+    vertical-align: middle;
+    background: currentColor;
+  }
+
+  .sponsor-slot--platinum .sponsor-tier { color: #d9dfe5; }
+  .sponsor-slot--silver .sponsor-tier { color: #aeb3ba; }
+  .sponsor-slot--bronze .sponsor-tier { color: #c77c45; }
+
+  .sponsor-media {
+    width: 100%;
+    height: 78px;
+    overflow: hidden;
+    background: #fff;
+  }
+
+  .sponsor-slot--platinum .sponsor-media {
+    width: min(320px, 88%);
+    height: auto;
+    aspect-ratio: 754 / 310;
+    margin: 0 auto;
+    background: transparent;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.28);
+  }
+
+  .sponsor-media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 0.4rem;
+    box-sizing: border-box;
+  }
+
+  .sponsor-logo--jk {
+    object-fit: contain;
+    padding: 0;
+  }
+
+  .sponsor-logo--australian {
+    object-fit: contain;
+    padding: 0.25rem;
+  }
+
+  .sponsor-logo--quicken {
+    object-fit: contain;
+    padding: 0.25rem;
+  }
+
+  @media (max-width: 420px) {
+    .sponsors { width: calc(100vw - 2.5rem); margin-top: 1.6rem; }
+    .sponsor-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
+    .sponsor-slot--platinum { grid-column: 1 / -1; }
+    .sponsor-media { height: 72px; }
+    .sponsor-slot--platinum .sponsor-media {
+      width: min(280px, 94%);
+      height: auto;
+    }
+    .sponsor-meta { gap: 0.3rem; }
+    .sponsor-link { padding: 0.22rem 0.32rem; font-size: 0.38rem; letter-spacing: 0.06em; }
+    .sponsor-tier { font-size: 0.4rem; letter-spacing: 0.15em; }
+  }
+
   /* Small flame icon */
   .flame {
     display: inline-block;
@@ -356,6 +709,273 @@
     border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
     clip-path: polygon(50% 0%, 85% 55%, 70% 100%, 30% 100%, 15% 55%);
     box-shadow: 0 0 12px 4px rgba(255,106,0,0.4);
+  }
+
+  /* Schedule redirect handoff */
+  body.redirecting { overflow: hidden; }
+
+  .redirect-overlay[hidden] { display: none; }
+
+  .redirect-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    background: rgba(4,4,4,0.72);
+    backdrop-filter: blur(6px);
+  }
+
+  .redirect-panel {
+    width: min(520px, calc(100vw - 3rem));
+    overflow: hidden;
+    position: relative;
+    padding: clamp(1.4rem, 4vw, 2.2rem);
+    border: 1px solid rgba(245,245,240,0.14);
+    border-top-color: rgba(255,149,0,0.65);
+    background: #111;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.46);
+    text-align: left;
+  }
+
+  .redirect-panel::before,
+  .redirect-panel::after {
+    display: none;
+  }
+
+  .redirect-panel-focus {
+    transform-origin: center center;
+    will-change: transform, filter, opacity;
+  }
+
+  .redirect-kicker,
+  .redirect-sponsor-note {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.52rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--grey);
+  }
+
+  .redirect-title {
+    margin: 0.55rem 0 0;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.3rem, 4vw, 1.75rem);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    color: var(--white);
+  }
+
+  .redirect-seconds {
+    display: inline-block;
+    min-width: 1ch;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .redirect-copy {
+    margin: 0.7rem 0 0;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: rgba(245,245,240,0.66);
+  }
+
+  .redirect-copy strong { color: var(--white); font-weight: 600; }
+
+  .redirect-destination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding: 0.75rem 0.85rem;
+    border: 1px solid rgba(245,245,240,0.09);
+    background: rgba(245,245,240,0.025);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.54rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(245,245,240,0.35);
+  }
+
+  .redirect-destination strong {
+    color: rgba(245,245,240,0.82);
+    font-weight: 600;
+  }
+
+  .redirect-progress {
+    width: 100%;
+    height: 1px;
+    margin: 0.9rem 0 1.35rem;
+    overflow: hidden;
+    background: rgba(245,245,240,0.1);
+  }
+
+  .redirect-progress span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: #d07842;
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  .redirect-sponsors {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .redirect-sponsor {
+    grid-column: span 2;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem;
+    border: 1px solid rgba(245,245,240,0.09);
+    background: rgba(245,245,240,0.02);
+    text-align: center;
+  }
+
+  .redirect-sponsor:nth-child(5) { grid-column: 2 / span 2; }
+  .redirect-sponsor:nth-child(6) { grid-column: 4 / span 2; }
+
+  .redirect-sponsor--platinum {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.65rem;
+    border-color: rgba(217,223,229,0.2);
+    background: rgba(245,245,240,0.035);
+  }
+
+  .redirect-sponsor-logo {
+    width: 100%;
+    height: 58px;
+    overflow: visible;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.3rem;
+    box-sizing: border-box;
+    background: #fff;
+  }
+
+  .redirect-sponsor--platinum .redirect-sponsor-logo {
+    width: 150px;
+    height: auto;
+    aspect-ratio: 754 / 310;
+  }
+
+  .redirect-sponsor-logo img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    padding: 0;
+    transform: none;
+  }
+
+  .redirect-sponsor-logo img.redirect-sponsor-logo--quicken {
+    object-fit: contain;
+    padding: 0;
+  }
+
+  .redirect-sponsor-logo img.redirect-sponsor-logo--australian {
+    object-fit: contain;
+    padding: 0;
+  }
+
+  .redirect-sponsor-copy { min-width: 0; }
+
+  .redirect-sponsor-note { text-align: center; }
+
+  .redirect-sponsor-name {
+    display: block;
+    font-family: 'Inter', sans-serif;
+    font-weight: 650;
+    font-size: 0.66rem;
+    line-height: 1.25;
+    color: rgba(245,245,240,0.88);
+  }
+
+  .redirect-sponsor-tier {
+    display: block;
+    margin-top: 0.28rem;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 0.4rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(245,245,240,0.45);
+  }
+
+  .redirect-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.35rem;
+    padding-top: 1.15rem;
+    border-top: 1px solid rgba(245,245,240,0.08);
+  }
+
+  .redirect-continue,
+  .redirect-stay {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+  }
+
+  .redirect-continue {
+    padding: 0.72rem 1.25rem;
+    border: 1px solid var(--white);
+    background: var(--white);
+    color: var(--black);
+    text-decoration: none;
+  }
+
+  .redirect-stay {
+    padding: 0.72rem 0;
+    border: 0;
+    border-bottom: 1px solid rgba(245,245,240,0.24);
+    background: transparent;
+    color: rgba(245,245,240,0.58);
+    cursor: pointer;
+  }
+
+  .redirect-continue:focus-visible,
+  .redirect-stay:focus-visible {
+    outline: 2px solid var(--flame-orange);
+    outline-offset: 4px;
+  }
+
+  @media (max-width: 480px) {
+    .redirect-panel { padding: 1.35rem 1rem; }
+    .redirect-sponsors { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .redirect-sponsor,
+    .redirect-sponsor:nth-child(5),
+    .redirect-sponsor:nth-child(6) { grid-column: auto; }
+    .redirect-sponsor--platinum {
+      grid-column: 1 / -1;
+      gap: 0.7rem;
+    }
+    .redirect-sponsor--platinum .redirect-sponsor-logo { width: 120px; }
+    .redirect-actions { flex-direction: column-reverse; align-items: stretch; gap: 0.7rem; }
+    .redirect-continue,
+    .redirect-stay { text-align: center; }
   }
 </style>
 </head>
@@ -398,28 +1018,38 @@
         <div class="divider"></div>
 
         <div class="countdown" id="countdown">
-          <div class="countdown-label">First serve in</div>
-          <div class="countdown-units">
-            <div class="countdown-block">
-              <span class="countdown-number" id="cd-days">---</span>
-              <span class="countdown-unit">Days</span>
-            </div>
-            <span class="countdown-sep">:</span>
-            <div class="countdown-block">
-              <span class="countdown-number" id="cd-hours">--</span>
-              <span class="countdown-unit">Hrs</span>
-            </div>
-            <span class="countdown-sep">:</span>
-            <div class="countdown-block">
-              <span class="countdown-number" id="cd-mins">--</span>
-              <span class="countdown-unit">Min</span>
-            </div>
-            <span class="countdown-sep">:</span>
-            <div class="countdown-block">
-              <span class="countdown-number" id="cd-secs">--</span>
-              <span class="countdown-unit">Sec</span>
+          <div class="countdown-timer" id="countdown-timer">
+            <div class="countdown-label">First serve in</div>
+            <div class="countdown-units">
+              <div class="countdown-block">
+                <span class="countdown-number" id="cd-days">---</span>
+                <span class="countdown-unit">Days</span>
+              </div>
+              <span class="countdown-sep">:</span>
+              <div class="countdown-block">
+                <span class="countdown-number" id="cd-hours">--</span>
+                <span class="countdown-unit">Hrs</span>
+              </div>
+              <span class="countdown-sep">:</span>
+              <div class="countdown-block">
+                <span class="countdown-number" id="cd-mins">--</span>
+                <span class="countdown-unit">Min</span>
+              </div>
+              <span class="countdown-sep">:</span>
+              <div class="countdown-block">
+                <span class="countdown-number" id="cd-secs">--</span>
+                <span class="countdown-unit">Sec</span>
+              </div>
             </div>
           </div>
+          <a class="countdown-live" id="countdown-live" href="https://faithandfire-live.vercel.app/" aria-live="polite" aria-label="First serve is now — view the tournament schedule" hidden>
+            <span class="live-copy">
+              <span class="live-label">First serve in</span>
+              <span class="live-now">Now</span>
+              <span class="live-action">View Schedule</span>
+            </span>
+            <span class="live-arrow" aria-hidden="true">&rarr;</span>
+          </a>
         </div>
 
         <div class="details">
@@ -432,6 +1062,64 @@
           <a href="/book" class="register-btn book-btn">Book Tickets</a>
           <!-- <a href="/registration" class="register-btn">Register Now</a> -->
         </div>
+
+        <section class="sponsors" aria-labelledby="sponsors-title">
+          <h2 class="sponsors-heading" id="sponsors-title">Supported by</h2>
+          <div class="sponsor-grid">
+            <div class="sponsor-slot sponsor-slot--platinum">
+              <div class="sponsor-meta">
+                <span class="sponsor-tier">Platinum Sponsor</span>
+                <a class="sponsor-link" href="http://jandkhomes.com.au/" target="_blank" rel="noopener noreferrer" aria-label="View J&amp;K Homes website">View website&nbsp;&nearr;</a>
+              </div>
+              <div class="sponsor-media">
+                <img class="sponsor-logo--jk" src="/sponsors/j%26khomeslogo.jpeg" alt="J&amp;K Homes Pty Ltd">
+              </div>
+            </div>
+            <div class="sponsor-slot sponsor-slot--silver">
+              <div class="sponsor-meta">
+                <span class="sponsor-tier">Silver Sponsor</span>
+              </div>
+              <div class="sponsor-media">
+                <img src="/sponsors/ezyloanzlogo.jpeg" alt="Ezy Loanz">
+              </div>
+            </div>
+            <div class="sponsor-slot sponsor-slot--bronze">
+              <div class="sponsor-meta">
+                <span class="sponsor-tier">Bronze Sponsor</span>
+                <a class="sponsor-link" href="https://quickenloans.au/" target="_blank" rel="noopener noreferrer" aria-label="View Quicken Loans website">View website&nbsp;&nearr;</a>
+              </div>
+              <div class="sponsor-media">
+                <img class="sponsor-logo--quicken" src="/sponsors/quickenloanzlogo.jpeg" alt="Quicken Loans">
+              </div>
+            </div>
+            <div class="sponsor-slot sponsor-slot--bronze">
+              <div class="sponsor-meta">
+                <span class="sponsor-tier">Bronze Sponsor</span>
+                <a class="sponsor-link" href="https://aioliving.com.au/" target="_blank" rel="noopener noreferrer" aria-label="View Australian Indoor and Outdoor Living website">View website&nbsp;&nearr;</a>
+              </div>
+              <div class="sponsor-media">
+                <img class="sponsor-logo--australian" src="/sponsors/australianindoorandoutdoor.jpeg" alt="Australian Indoor and Outdoor Living">
+              </div>
+            </div>
+            <div class="sponsor-slot sponsor-slot--bronze">
+              <div class="sponsor-meta">
+                <span class="sponsor-tier">Bronze Sponsor</span>
+              </div>
+              <div class="sponsor-media">
+                <img src="/sponsors/jacobsonlogo.jpeg" alt="Jacobson Glass and Glazing">
+              </div>
+            </div>
+            <div class="sponsor-slot sponsor-slot--bronze sponsor-slot--wide">
+              <div class="sponsor-meta">
+                <span class="sponsor-tier">Bronze Sponsor</span>
+                <a class="sponsor-link" href="https://thetotal.au/" target="_blank" rel="noopener noreferrer" aria-label="View The Total website">View website&nbsp;&nearr;</a>
+              </div>
+              <div class="sponsor-media">
+                <img src="/sponsors/thetotallogo.jpeg" alt="The Total Accounting Tax Finance">
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </main>
 
@@ -441,11 +1129,134 @@
     </footer>
   </div>
 
+  <div class="redirect-overlay" id="schedule-redirect" role="dialog" aria-modal="true" aria-labelledby="redirect-title" hidden>
+    <div class="redirect-panel">
+      <div class="redirect-panel-focus">
+      <p class="redirect-kicker">Faith &amp; Fire Invitational</p>
+      <h2 class="redirect-title" id="redirect-title">Opening the tournament schedule</h2>
+      <p class="redirect-copy">You’ll be redirected to <strong>faithandfire-live.vercel.app</strong> in <span class="redirect-seconds" id="redirect-seconds">5</span> seconds.</p>
+      <div class="redirect-destination"><span>Schedule destination</span><strong>faithandfire-live.vercel.app</strong></div>
+      <div class="redirect-progress" aria-hidden="true"><span id="redirect-progress"></span></div>
+
+      <p class="redirect-sponsor-note">With thanks to our event sponsors</p>
+      <div class="redirect-sponsors" aria-label="Event sponsors">
+        <div class="redirect-sponsor redirect-sponsor--platinum">
+          <div class="redirect-sponsor-logo">
+            <img src="/sponsors/j%26khomeslogo.jpeg" alt="J&amp;K Homes Pty Ltd">
+          </div>
+          <div class="redirect-sponsor-copy">
+            <strong class="redirect-sponsor-name">J&amp;K Homes</strong>
+            <span class="redirect-sponsor-tier">Platinum sponsor</span>
+          </div>
+        </div>
+        <div class="redirect-sponsor">
+          <div class="redirect-sponsor-logo">
+            <img src="/sponsors/ezyloanzlogo.jpeg" alt="Ezy Loanz">
+          </div>
+          <div class="redirect-sponsor-copy">
+            <strong class="redirect-sponsor-name">Ezy Loanz</strong>
+            <span class="redirect-sponsor-tier">Silver sponsor</span>
+          </div>
+        </div>
+        <div class="redirect-sponsor">
+          <div class="redirect-sponsor-logo">
+            <img class="redirect-sponsor-logo--quicken" src="/sponsors/quickenloanzlogo.jpeg" alt="Quicken Loans">
+          </div>
+          <div class="redirect-sponsor-copy">
+            <strong class="redirect-sponsor-name">Quicken Loans</strong>
+            <span class="redirect-sponsor-tier">Bronze sponsor</span>
+          </div>
+        </div>
+        <div class="redirect-sponsor">
+          <div class="redirect-sponsor-logo">
+            <img class="redirect-sponsor-logo--australian" src="/sponsors/australianindoorandoutdoor.jpeg" alt="Australian Indoor and Outdoor Living">
+          </div>
+          <div class="redirect-sponsor-copy">
+            <strong class="redirect-sponsor-name">Australian Indoor &amp; Outdoor Living</strong>
+            <span class="redirect-sponsor-tier">Bronze sponsor</span>
+          </div>
+        </div>
+        <div class="redirect-sponsor">
+          <div class="redirect-sponsor-logo">
+            <img src="/sponsors/jacobsonlogo.jpeg" alt="Jacobson Glass and Glazing">
+          </div>
+          <div class="redirect-sponsor-copy">
+            <strong class="redirect-sponsor-name">Jacobson Glass &amp; Glazing</strong>
+            <span class="redirect-sponsor-tier">Bronze sponsor</span>
+          </div>
+        </div>
+        <div class="redirect-sponsor">
+          <div class="redirect-sponsor-logo">
+            <img src="/sponsors/thetotallogo.jpeg" alt="The Total Accounting Tax Finance">
+          </div>
+          <div class="redirect-sponsor-copy">
+            <strong class="redirect-sponsor-name">The Total</strong>
+            <span class="redirect-sponsor-tier">Bronze sponsor</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="redirect-actions">
+        <button class="redirect-stay" id="redirect-stay" type="button">Stay here</button>
+        <a class="redirect-continue" id="redirect-continue" href="https://faithandfire-live.vercel.app/">Open schedule now</a>
+      </div>
+      </div>
+    </div>
+  </div>
+
   <script src="shared.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script>
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
     const embersContainer = document.getElementById("embers");
+    const homeMain = document.querySelector(".main");
+    const homeComposition = document.querySelector(".title-group");
+    const redirectPanel = document.querySelector(".redirect-panel");
+    let fitFrame = null;
+
+    function fitToViewport() {
+      if (fitFrame !== null) cancelAnimationFrame(fitFrame);
+
+      fitFrame = requestAnimationFrame(() => {
+        fitFrame = null;
+
+        const mainStyle = window.getComputedStyle(homeMain);
+        const availableWidth = homeMain.clientWidth
+          - parseFloat(mainStyle.paddingLeft)
+          - parseFloat(mainStyle.paddingRight);
+        const availableHeight = homeMain.clientHeight
+          - parseFloat(mainStyle.paddingTop)
+          - parseFloat(mainStyle.paddingBottom);
+        const homeScale = Math.min(
+          1,
+          availableWidth / homeComposition.scrollWidth,
+          availableHeight / homeComposition.scrollHeight
+        );
+
+        homeComposition.style.transform = `scale(${Math.max(0.25, homeScale)})`;
+
+        const redirectOverlay = document.getElementById("schedule-redirect");
+        if (!redirectOverlay.hidden) {
+          const viewportHeight = window.visualViewport?.height || window.innerHeight;
+          const redirectScale = Math.min(
+            1,
+            (window.innerWidth - 32) / redirectPanel.scrollWidth,
+            (viewportHeight - 32) / redirectPanel.scrollHeight
+          );
+          redirectPanel.style.transform = `scale(${Math.max(0.4, redirectScale)})`;
+        }
+      });
+    }
+
+    window.scrollTo(0, 0);
+    window.addEventListener("resize", fitToViewport, { passive: true });
+    window.visualViewport?.addEventListener("resize", fitToViewport, { passive: true });
+    new ResizeObserver(fitToViewport).observe(homeMain);
+    document.fonts?.ready.then(fitToViewport);
+    document.querySelectorAll(".sponsor-media img, .redirect-sponsor-logo img").forEach((image) => {
+      if (!image.complete) image.addEventListener("load", fitToViewport, { once: true });
+    });
+    fitToViewport();
 
     // -- Spark spawner --
     function spawnSpark(delay, opts = {}) {
@@ -629,6 +1440,14 @@
     tl.to(".register-btn", {
       opacity: 1, duration: 1, ease: "power2.out"
     }, 5.2);
+    tl.to(".sponsors", {
+      opacity: 1, duration: 0.9, ease: "power2.out"
+    }, 5.35);
+    tl.fromTo(".sponsor-slot", {
+      opacity: 0, y: 8
+    }, {
+      opacity: 1, y: 0, duration: 0.7, stagger: 0.1, ease: "power2.out"
+    }, 5.45);
 
     // -- Nav & bottom bar --
     tl.to(".site-nav", {
@@ -784,13 +1603,46 @@
     const hrsEl = document.getElementById("cd-hours");
     const minsEl = document.getElementById("cd-mins");
     const secsEl = document.getElementById("cd-secs");
+    const countdownEl = document.getElementById("countdown");
+    const timerEl = document.getElementById("countdown-timer");
+    const liveEl = document.getElementById("countdown-live");
     let prevSecs = null;
+    let timerId = null;
+    let isLive = false;
 
     function pad(n) { return String(n).padStart(2, "0"); }
 
+    function showLiveState() {
+      if (isLive) return;
+      isLive = true;
+
+      if (timerId !== null) clearInterval(timerId);
+      timerEl.hidden = true;
+      liveEl.hidden = false;
+      countdownEl.classList.add("is-live");
+      fitToViewport();
+
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        gsap.fromTo(liveEl,
+          { opacity: 0, y: 10, scale: 0.96 },
+          { opacity: 1, y: 0, scale: 1, duration: 0.65, ease: "back.out(1.6)" }
+        );
+        gsap.fromTo(countdownEl,
+          { boxShadow: "0 0 0 rgba(255,72,0,0)" },
+          { boxShadow: "0 0 36px rgba(255,72,0,0.12)", duration: 1.1, ease: "power2.out" }
+        );
+      }
+    }
+
     function tick() {
       const now = Date.now();
-      const diff = Math.max(0, target - now);
+      const diff = target - now;
+
+      if (diff <= 0) {
+        showLiveState();
+        return;
+      }
+
       const d = Math.floor(diff / 86400000);
       const h = Math.floor((diff % 86400000) / 3600000);
       const m = Math.floor((diff % 3600000) / 60000);
@@ -814,7 +1666,75 @@
     }
 
     tick();
-    setInterval(tick, 1000);
+    if (!isLive) timerId = setInterval(tick, 1000);
+
+    // -- External schedule redirect handoff --
+    const redirectParams = new URLSearchParams(window.location.search);
+    if (redirectParams.get("redirect") === "schedule") {
+      const redirectUrl = "https://faithandfire-live.vercel.app/";
+      const redirectDuration = 5000;
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const redirectRevealDelay = 6800;
+      const redirectOverlay = document.getElementById("schedule-redirect");
+      const redirectFocus = redirectOverlay.querySelector(".redirect-panel-focus");
+      const redirectSeconds = document.getElementById("redirect-seconds");
+      const redirectProgress = document.getElementById("redirect-progress");
+      const redirectContinue = document.getElementById("redirect-continue");
+      const redirectStay = document.getElementById("redirect-stay");
+      let redirectTimer = null;
+      let redirectRevealTimer = null;
+      let redirectStartedAt = null;
+
+      redirectContinue.href = redirectUrl;
+
+      function updateRedirectCountdown() {
+        const elapsed = Date.now() - redirectStartedAt;
+        const remaining = Math.max(0, Math.ceil((redirectDuration - elapsed) / 1000));
+        redirectSeconds.textContent = String(remaining);
+        redirectProgress.style.transform = `scaleX(${Math.min(elapsed / redirectDuration, 1)})`;
+
+        if (elapsed >= redirectDuration) {
+          clearInterval(redirectTimer);
+          window.location.assign(redirectUrl);
+        }
+      }
+
+      function revealRedirectHandoff() {
+        redirectStartedAt = Date.now();
+        redirectSeconds.textContent = "5";
+        redirectProgress.style.transform = "scaleX(0)";
+        redirectOverlay.hidden = false;
+        document.body.classList.add("redirecting");
+        fitToViewport();
+
+        if (!reduceMotion) {
+          gsap.fromTo(redirectOverlay,
+            { opacity: 0 },
+            { opacity: 1, duration: 0.45, ease: "power1.out" }
+          );
+          gsap.fromTo(redirectFocus,
+            { opacity: 0, y: 8 },
+            { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" }
+          );
+        }
+
+        redirectStay.focus();
+        redirectTimer = setInterval(updateRedirectCountdown, 100);
+        updateRedirectCountdown();
+      }
+
+      redirectRevealTimer = setTimeout(revealRedirectHandoff, redirectRevealDelay);
+
+      redirectStay.addEventListener("click", () => {
+        clearTimeout(redirectRevealTimer);
+        if (redirectTimer !== null) clearInterval(redirectTimer);
+        redirectOverlay.hidden = true;
+        document.body.classList.remove("redirecting");
+        redirectPanel.style.transform = "";
+        window.history.replaceState({}, "", "/");
+        fitToViewport();
+      });
+    }
   </script>
 </body>
 </html>
